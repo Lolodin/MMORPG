@@ -1,0 +1,23 @@
+{
+  "name": "gameserver",
+  "version": "0.0.1",
+  "description": "lib for client",
+  "main": "test.html",
+  "dependencies": {
+    "phaser": "^3.21.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lolodin/MMORPG.git"
+  },
+  "author": "Lolodin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lolodin/MMORPG/issues"
+  },
+  "homepage": "https://github.com/Lolodin/MMORPG#readme"
+}

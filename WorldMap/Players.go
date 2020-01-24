@@ -1,10 +1,14 @@
 package WorldMap
 
+import "Test/Chunk"
+
 type Player struct {
 	Name string
 	X int
 	Y int
-	WalkPath
+	speed int
+	move bool
+	walkPath Chunk.Coordinate
 
 }
 type Players struct {
@@ -18,4 +22,15 @@ func NewPlayer(n string, id int) Player {
 
 	return p
 
+}
+//Проверка, двигается ли персонаж
+func(p Player) isMove()bool{
+	return p.move
+}
+func(p Player)setWalkPath(x, y int)  {
+	xy:=Chunk.Coordinate{X:x, Y:y}
+	p.walkPath = xy
+}
+func(p Player)getWalkPath()Chunk.Coordinate{
+	return p.walkPath
 }

@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"golang.org/x/net/websocket"
+	"time"
 )
 
 type requestMap struct {
@@ -59,6 +60,7 @@ return func(ws *websocket.Conn) {
 	fmt.Println("Connect Player", player.Name)
 	for {
 		websocket.JSON.Receive(ws, &player)
+		fmt.Println("TIK",time.Now().Second() ,time.Now().Nanosecond())
 		W.UpdatePlayer(player)
 		pls:=W.GetPlayers()
 		websocket.JSON.Send(ws,pls)

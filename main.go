@@ -18,15 +18,14 @@ func main() {
 	http.Handle("/node_modules/phaser/dist/", http.StripPrefix("/node_modules/phaser/dist/", http.FileServer(http.Dir("./node_modules/phaser/dist/"))))
 	http.Handle("/Client/", http.StripPrefix("/Client/", http.FileServer(http.Dir("./Client/"))))
 	http.Handle("/Client/content/", http.StripPrefix("/Client/content/", http.FileServer(http.Dir("./Client/content/"))))
-err:= http.ListenAndServe("localhost:8080", nil)
-if err!=nil {
-fmt.Println(err.Error())
+	err := http.ListenAndServe("localhost:8080", nil)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 }
 
-
-}
-
-func indexHandler (w http.ResponseWriter, r *http.Request) {
+func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("indexAction")
 	t, _ := template.ParseFiles("test.html")
 	err := t.Execute(w, "test")
@@ -34,6 +33,3 @@ func indexHandler (w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err.Error())
 	}
 }
-
-
-

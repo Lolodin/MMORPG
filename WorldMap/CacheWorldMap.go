@@ -10,13 +10,12 @@ type WorldMap struct {
 	sync.Mutex
 	Chunks map[Chunk.Coordinate]Chunk.Chunk
 	Player map[string]Player
-	Tree *Chunk.Tree
-
-
+	Tree   *Chunk.Tree
 }
+
 //Возвращает чанк соответствующий координатам, возвращает ошибку если такого чанка не существует
 func (w *WorldMap) GetChunk(coordinate Chunk.Coordinate) (Chunk.Chunk, error) {
-	c, ok:= w.Chunks[coordinate]
+	c, ok := w.Chunks[coordinate]
 	if ok == true {
 		return c, nil
 	} else {
@@ -24,20 +23,22 @@ func (w *WorldMap) GetChunk(coordinate Chunk.Coordinate) (Chunk.Chunk, error) {
 	}
 
 }
+
 // Добавлявет в мир чанк
 func (w *WorldMap) AddChunk(coordinate Chunk.Coordinate, chunk Chunk.Chunk) {
 
-isExist:=w.isChunkExist(coordinate)
-if isExist {
-	return
-} else {
-	w.Chunks[coordinate] = chunk
-}
+	isExist := w.isChunkExist(coordinate)
+	if isExist {
+		return
+	} else {
+		w.Chunks[coordinate] = chunk
+	}
 
 }
+
 //Проверяет, существует чанк в мире или нет
-func (w *WorldMap) isChunkExist(coordinate Chunk.Coordinate) bool  {
-	_, ok:= w.Chunks[coordinate]
+func (w *WorldMap) isChunkExist(coordinate Chunk.Coordinate) bool {
+	_, ok := w.Chunks[coordinate]
 
 	return ok
 }
@@ -50,7 +51,7 @@ func NewCacheWorldMap() WorldMap {
 }
 func (w *WorldMap) AddPlayer(player Player) {
 
-	_, ok:=w.Player[player.Name]
+	_, ok := w.Player[player.Name]
 	if !ok {
 		fmt.Println(player.Name)
 		w.Lock()
@@ -63,7 +64,7 @@ func (w *WorldMap) AddPlayer(player Player) {
 }
 func (w *WorldMap) UpdatePlayer(player Player) {
 	w.Lock()
-	p, ok:=w.Player[player.Name]
+	p, ok := w.Player[player.Name]
 	w.Unlock()
 	if ok {
 		if w.CheckBusyTile(p.X, p.Y) {
@@ -81,22 +82,23 @@ func (w *WorldMap) UpdatePlayer(player Player) {
 
 }
 func (w *WorldMap) GetPlayers() Players {
-	pls:= Players{}
+	pls := Players{}
 	w.Lock()
-	for _, P := range w.Player{
+	for _, P := range w.Player {
 		pls.P = append(pls.P, P)
 	}
 	w.Unlock()
 	return pls
 }
+
 // return true if Tree busy tile
-func(w *WorldMap) CheckBusyTile(PX, PY int) bool {
+func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
 	PX = PX
 	PY = PY
 	chunkId := GetChankID(PX, PY)
 	w.Lock()
 	objChunk := w.Chunks[chunkId]
 	w.Unlock()
-	_, ok:=objChunk.Tree[Chunk.Coordinate{X:PX, Y:PY}]
+	_, ok := objChunk.Tree[Chunk.Coordinate{X: PX, Y: PY}]
 	return ok
 }

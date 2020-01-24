@@ -5,7 +5,7 @@ class MainScene extends Phaser.Scene{
     constructor() {
         super({key: "SceneMain"})
         this.GetServerMap()
-        this.CurrentChunk = this.getChunkID(0,0) //Начальный чанк
+        this.CurrentChunk = 0//Начальный чанк
         this.coordinate = this.getCurrentMap(this.CurrentChunk) // Массив Координат чанков на текущей карте
         this.tileSize = 16 // Размер тайтла
         this.chunkSize = 16 * this.tileSize // Размер чанка
@@ -18,7 +18,7 @@ class MainScene extends Phaser.Scene{
 
 
     preload() {
-        this.load.spritesheet('Water', 'Client/content/sprWater.png', {
+        this.load.spritesheet('Water', 'Client/Content/sprWater.png', {
             frameHeight: 16,
             frameWidth: 16,
 
@@ -54,6 +54,7 @@ class MainScene extends Phaser.Scene{
        this.cameras.main.startFollow(this.P, true)
         let c = this.getChunkID(this.P.x, this.P.y)
         this.coordinate = this.getCurrentMap(c)
+        this.DrawMap(this.map)
         /*
         Рисуем игроков на игровой карте
          */
@@ -114,7 +115,7 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
 
         } )
         request = request.json()
-        await  request.then((data)=>
+        request.then((data)=>
         {
             this.map = data.CurrentMap
             this.DrawMap(this.map)
@@ -255,6 +256,7 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
         }
         return [chunkX, chunkY];
     }
+    //Возвращает карту чанка
     getCurrentMap(currentChunk) {
         let map = [];
         let coordinateX = currentChunk[0]*this.chunkSize;

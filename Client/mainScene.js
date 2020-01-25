@@ -5,14 +5,15 @@ class MainScene extends Phaser.Scene{
     constructor() {
         super({key: "SceneMain"})
         this.GetServerMap()
-        this.CurrentChunk = 0//Начальный чанк
+        this.CurrentChunk = [1,1]//Начальный чанк
         this.coordinate = this.getCurrentMap(this.CurrentChunk) // Массив Координат чанков на текущей карте
         this.tileSize = 16 // Размер тайтла
         this.chunkSize = 16 * this.tileSize // Размер чанка
         this.LoadChunks = [] // Загруженные чанки
         this.CurrentMap = [] // Текущая отрисованная карта
         this.activePlayers = [] //Активные игроки на карте
-        this.ID = {} // Аватар игрока для обработки сервером
+        this.Player = {} // Аватар игрока для обработки сервером
+        this.map = 0//карта для отрисовки
 
 }
 
@@ -21,8 +22,6 @@ class MainScene extends Phaser.Scene{
         this.load.spritesheet('Water', 'Client/Content/sprWater.png', {
             frameHeight: 16,
             frameWidth: 16,
-
-
         });
         this.load.image('Mount', 'Client/Content/sprSand.png');
         this.load.image('Ground', 'Client/Content/sprGrass.png');
@@ -48,13 +47,12 @@ class MainScene extends Phaser.Scene{
         });
 
        this.P = this.add.image(8,8, "Player")
-        this.ID.x = 8
-        this.ID.y = 8
+        this.Player.x = 8
+        this.Player.y = 8
        this.P.setDepth(2)
        this.cameras.main.startFollow(this.P, true)
-        let c = this.getChunkID(this.P.x, this.P.y)
-        this.coordinate = this.getCurrentMap(c)
-        this.DrawMap(this.map)
+        this.GetServerMap(this.P.x, this.P.y)
+
         /*
         Рисуем игроков на игровой карте
          */
@@ -65,23 +63,23 @@ class MainScene extends Phaser.Scene{
             console.log(players)
             this.DrawPlayers(players)
         }
-        console.log(this.P, 'player')
+        console.log(this.CurrentMap)
 
     }
     update(time, delta) {
 // Блок управления
 let cursors = this.input.keyboard.createCursorKeys();
 if (cursors.left.isDown) {
-    this.ID.x-=1
+    this.Player.x-=1
 }
 if (cursors.right.isDown) {
-    this.ID.x+=1
+    this.Player.x+=1
         }
         if (cursors.up.isDown) {
-            this.ID.y-=1
+            this.Player.y-=1
         }
         if (cursors.down.isDown) {
-            this.ID.y+=1
+            this.Player.y+=1
         }
 
 
@@ -92,10 +90,9 @@ if (cursors.right.isDown) {
             this.clearMap(newCoordinate)
             this.GetServerMap(this.P.x,this.P.y)
             this.coordinate = newCoordinate
-
         }
         //Посылаем данные о местоположении игрока на сервер
-let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
+let playerData = {Name: this.Player.name, X: this.Player.x, Y: this.Player.y}
         JSON.stringify(playerData)
         this.websocket.send(JSON.stringify(playerData))
     }
@@ -104,7 +101,7 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
     //Идентификация
     Identification() {
         let pro = prompt("введите имя", "anon")
-        this.ID.name = pro
+        this.Player.name = pro
     }
     // Получаем Игровую карту
     async GetServerMap(X, Y) {
@@ -117,7 +114,7 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
         request = request.json()
         request.then((data)=>
         {
-            this.map = data.CurrentMap
+            this.map =  data.CurrentMap
             this.DrawMap(this.map)
         })
 
@@ -146,11 +143,12 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
         for (let item in chunck.Map) {
             {
                 let tile
+                let coordinate = this.cartesianToIsometric(chunck.Map[item].X, chunck.Map[item].Y)
                 if (chunck.Map[item].key == "Water") {
-                    tile = this.add.sprite(chunck.Map[item].X, chunck.Map[item].Y, "Water")
+                    tile = this.add.sprite(coordinate.x, coordinate.y, "Water")
                     tile.play("water")
                 } else{
-                    tile = this.add.image(chunck.Map[item].X, chunck.Map[item].Y, chunck.Map[item].key)
+                    tile = this.add.image(coordinate.x, coordinate.y, chunck.Map[item].key)
                 }
 
 
@@ -162,12 +160,17 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
 
 
                  let tileTree
-                 tileTree = this.add.image(chunck.Tree[item].X, chunck.Tree[item].Y, chunck.Tree[item].tree)
+            let coordinate = this.cartesianToIsometric(chunck.Tree[item].X, chunck.Tree[item].Y)
+                 tileTree = this.add.image(coordinate.x, coordinate.y, chunck.Tree[item].tree)
             tileTree.setDepth(2)
                  this.CurrentMap[chunck.ChunkID].add(tileTree)
 
 
         }
+    }
+    cartesianToIsometric(cartPt){
+        let tempPt=new Phaser.Geom.Point(cartPt.X-cartPt.Y,(cartPt.X+cartPt.Y)/2 );
+        return (tempPt);
     }
     //Очистка карты
     clearMap(newCoordinate) {
@@ -200,19 +203,19 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
 
 
         for (let i = 0; i<players.players.length; i++) {
-            if (players.players[i].Name == this.ID.name) {
+            if (players.players[i].Name == this.Player.name) {
                 this.P.x = players.players[i].X
                 this.P.y = players.players[i].Y
             }
 
-            if (!this.activePlayers[players.players[i].Name] && players.players[i].Name != this.ID.name) {
+            if (!this.activePlayers[players.players[i].Name] && players.players[i].Name != this.Player.name) {
                 this.activePlayers[players.players[i].Name] = this.add.container(players.players[i].X,players.players[i].Y)
                 let player =  this.add.image(0,0, "Player")
                 let Text = this.add.text(-players.players[i].Name.length*5,-23,players.players[i].Name)
                 this.activePlayers[players.players[i].Name].setDepth(2)
                 this.activePlayers[players.players[i].Name].add(player)
                 this.activePlayers[players.players[i].Name].add(Text)
-            } else if(this.activePlayers[players.players[i].Name] && players.players[i].Name != this.ID.name) {
+            } else if(this.activePlayers[players.players[i].Name] && players.players[i].Name != this.Player.name) {
 
 
                 this.activePlayers[players.players[i].Name].x =players.players[i].X
@@ -359,7 +362,7 @@ let playerData = {Name: this.ID.name, X: this.ID.x, Y: this.ID.y}
 
 
 
-    
-    
-    
+
+
+
 }

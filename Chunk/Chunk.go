@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-var TILE_SIZE = 16
-var CHANK_SIZE = 16 * TILE_SIZE
+var TILE_SIZE = 32
+var CHANK_SIZE = TILE_SIZE * TILE_SIZE
 var PERLIN_SEED float32 = 1700
 
 type Chunk struct {
@@ -59,8 +59,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 	switch {
 	case chunkXMax < 0 && chunkYMax < 0:
 		{
-			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= 16 {
-				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= 16 {
+			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= TILE_SIZE {
+				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= TILE_SIZE {
 
 					posX := float32(x - 8)
 					posY := float32(y + 8)
@@ -71,9 +71,11 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 					switch {
-					case perlinValue < -0.12:
+					case perlinValue < -0.01:
 						tile.Key = "Water"
-					case perlinValue >= -0.12 && perlinValue <= 0.5:
+					case perlinValue >= -0.01 && perlinValue <0 :
+						tile.Key = "Sand"
+					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
 						rand.Seed(int64(time.Now().Nanosecond() + x - y))
 						randomTree := rand.Float32()
@@ -92,10 +94,11 @@ func NewChunk(idChunk Coordinate) Chunk {
 		}
 	case chunkXMax < 0:
 		{
-			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= 16 {
-				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += 16 {
+			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= TILE_SIZE {
+				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += TILE_SIZE {
 					posX := float32(x - 8)
 					posY := float32(y + 8)
+					fmt.Println("COORDINATE", posX, posY)
 					tile := Tile{}
 
 					tile.X = int(posX)
@@ -125,8 +128,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 		}
 	case chunkYMax < 0:
 		{
-			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += 16 {
-				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= 16 {
+			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += TILE_SIZE {
+				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= TILE_SIZE {
 
 					posX := float32(x + 8)
 					posY := float32(y - 8)
@@ -156,8 +159,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 		}
 	default:
 		{
-			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += 16 {
-				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += 16 {
+			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += TILE_SIZE {
+				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += TILE_SIZE {
 					posX := float32(x + 8)
 					posY := float32(y + 8)
 					tile := Tile{}

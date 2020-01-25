@@ -1,11 +1,12 @@
-import {MainScene} from "./mainScene.js";
+//import {MainScene} from "./mainScene.js";
+import {PlayerScene} from "./PlayerScene.js";
 
 
 let config = {
     /*eslint no-undef:0*/
     type: Phaser.AUTO,
-    width: 1800,
-    height:600,
+    width: 1278,
+    height:800,
     background: 'black',
     physics: {
         default: 'arcade',
@@ -13,7 +14,7 @@ let config = {
             Gravity: {x: 0, y: 0}
         }
     },
-    scene:[MainScene],
+    scene:[PlayerScene],
     pixelArt: true,
     roundPixels: true
 
@@ -21,4 +22,3 @@ let config = {
 /*eslint no-undef:0*/
 /*eslint no-unused-vars:0*/
 let game = new Phaser.Game(config);
-console.log(MainScene);

@@ -98,7 +98,7 @@ func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
 	chunkId := GetChankID(PX, PY)
 	w.Lock()
 	objChunk := w.Chunks[chunkId]
-	w.Unlock()
 	_, ok := objChunk.Tree[Chunk.Coordinate{X: PX, Y: PY}]
+	w.Unlock()
 	return ok
 }

@@ -3,11 +3,12 @@ package WorldMap
 import "Test/Chunk"
 
 type Player struct {
-	Name     string
-	X        int
-	Y        int
+	Name     string `json:"Name"`
+	X        int `json:"X"`
+	Y        int `json:"Y"`
 	speed    int
 	move     bool
+//	AnimKey string
 	walkPath Chunk.Coordinate
 }
 type Players struct {
@@ -25,13 +26,21 @@ func NewPlayer(n string, id int) Player {
 }
 
 //Проверка, двигается ли персонаж
-func (p Player) isMove() bool {
+func (p *Player) isMove() bool {
 	return p.move
 }
-func (p Player) setWalkPath(x, y int) {
-	xy := Chunk.Coordinate{X: x, Y: y}
-	p.walkPath = xy
+//устанавливаем путь следования персонажа
+func (p *Player) setWalkPath(x, y int) {
+	if p.X != x && p.Y != y {
+		xy := Chunk.Coordinate{X: x, Y: y}
+		p.walkPath = xy
+	} else {
+		return
+	}
+
+
 }
-func (p Player) getWalkPath() Chunk.Coordinate {
+//Получаем путь куда должен перемещаться персонаж
+func (p *Player) getWalkPath() Chunk.Coordinate {
 	return p.walkPath
 }

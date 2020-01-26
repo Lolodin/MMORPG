@@ -8,6 +8,7 @@ class PlayerScene extends Phaser.Scene {
         this.CurrentChunk =0
         this.tileSize = 32
         this.chunkSize =  this.tileSize *  this.tileSize
+        this.targetPath = [0,0] // Путь куда должен двигаться персонаж
 
             }
 
@@ -44,43 +45,45 @@ class PlayerScene extends Phaser.Scene {
 
     }
     update(time, delta){
-        let cursors = this.input.keyboard.createCursorKeys();
-        if (cursors.left.isDown) {
-            let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-            cartesianCoord.x-=5
-            let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-            this.Player.x = coordinatePlayer.x
-            this.Player.y = coordinatePlayer.y
+        {
+            console.log(this.targetPath)
+            let p = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
+            if (p.x< this.targetPath[0]) {
+                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
+                cartesianCoord.x+=1
+                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
+                this.Player.x = coordinatePlayer.x
+                this.Player.y = coordinatePlayer.y
+            }
+            if (p.x > this.targetPath[0]) {
+                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
+                cartesianCoord.x-=1
+                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
+                this.Player.x = coordinatePlayer.x
+                this.Player.y = coordinatePlayer.y
+            }
+            if (p.y > this.targetPath[1]) {
+                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
+                cartesianCoord.y-=1
+                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
+                this.Player.x = coordinatePlayer.x
+                this.Player.y = coordinatePlayer.y
+            }
+            if (p.y < this.targetPath[1]) {
+                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
+                cartesianCoord.y+=1
+                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
+                this.Player.x = coordinatePlayer.x
+                this.Player.y = coordinatePlayer.y
+            }
 
+        }
 
-
-        }
-        if (cursors.right.isDown) {
-            let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-            cartesianCoord.x+=5
-            let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-            this.Player.x = coordinatePlayer.x
-            this.Player.y = coordinatePlayer.y
-        }
-        if (cursors.up.isDown) {
-            let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-            cartesianCoord.y-=5
-            let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-            this.Player.x = coordinatePlayer.x
-            this.Player.y = coordinatePlayer.y
-        }
-        if (cursors.down.isDown) {
-            let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-            cartesianCoord.y+=5
-            let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-            this.Player.x = coordinatePlayer.x
-            this.Player.y = coordinatePlayer.y
-        }
 
         let  nowChunk = this.getChunkID(this.Player.x, this.Player.y)
         if (nowChunk[0]!= this.CurrentChunk[0] || nowChunk[1]!=this.CurrentChunk[1]) {
             let newCoordinate = this.getCurrentMap(nowChunk)
-            this.CurrentChunk =  this.getChunkID(this.Player.x, this.Player.y)
+            this.CurrentChunk =  nowChunk
             this.clearMap(newCoordinate)
             this.coordinate = newCoordinate
             let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
@@ -106,14 +109,16 @@ class PlayerScene extends Phaser.Scene {
 
     }
     drawMapController(requstMapServer) {
-        requstMapServer.CurrentMap.forEach((chunk =>this.drawTileChunk(chunk.Map, chunk.ChunkID) ))
+      //  requstMapServer.CurrentMap.forEach((chunk =>this.drawTileChunk(chunk.Map, chunk.ChunkID) ))
+        for (let i = 0; i<9;i++) {
+            this.drawTileChunk(requstMapServer.CurrentMap[i].Map,  requstMapServer.CurrentMap[i].ChunkID)
+        }
     }
     drawTileChunk(chunk, chunkID) {
         // Check Chunk is Load
         if (this.LoadChunks[chunkID] == true) {
             return
         }
-        console.log(this.LoadChunks)
         // add Chunk Group for tiles
         // Load chunk true
         this.CurrentMap[chunkID] = this.add.group()
@@ -128,7 +133,11 @@ for (let coordTile in chunk) {
        tile = this.add.image(coordinate.x, coordinate.y,chunk[coordTile].key )
     }
 tile.setInteractive()
-    tile.on('clicked', (tile)=>console.log(this.isometricTocartesian({X:tile.x, Y:tile.y})), this)
+    tile.on('clicked', (tile)=>{
+        let coord = this.isometricTocartesian({X: tile.x, Y: tile.y})
+       this.targetPath[0] = coord.x
+       this.targetPath[1] = coord.y
+    }, this)
 
 // add tile in ChunkGroup
     this.CurrentMap[chunkID].add(tile)
@@ -279,21 +288,17 @@ tile.setInteractive()
         for (let i = 0; i<this.coordinate.length;i++) {
             let chunkIsNotExist = true
             newCoordinate.forEach((v) => {
-
                 if (this.coordinate[i][0]==v[0] && this.coordinate[i][1]==v[1]) {
-
                     chunkIsNotExist = false
                 }
             })
 
-
             if (chunkIsNotExist) {
                 let c = this.coordinate[i][0]+","+this.coordinate[i][1]
-                this.LoadChunks[c] = false
-                console.log(this.CurrentMap, c, "coordinate group", this.coordinate)
-
+                delete this.LoadChunks[c]
                 try {
                     this.CurrentMap[c].clear(true, true)
+                    delete this.CurrentMap[c];
                 }catch (e) {
 
                 }

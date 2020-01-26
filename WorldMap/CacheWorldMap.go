@@ -49,6 +49,7 @@ func NewCacheWorldMap() WorldMap {
 	world.Player = make(map[string]Player)
 	return world
 }
+//Добавляем нового игрока в карту
 func (w *WorldMap) AddPlayer(player Player) {
 
 	_, ok := w.Player[player.Name]
@@ -62,6 +63,7 @@ func (w *WorldMap) AddPlayer(player Player) {
 	}
 
 }
+// Обновляем данные персонажа в мире
 func (w *WorldMap) UpdatePlayer(player Player) {
 	w.Lock()
 	p, ok := w.Player[player.Name]
@@ -81,6 +83,7 @@ func (w *WorldMap) UpdatePlayer(player Player) {
 	}
 
 }
+//map players
 func (w *WorldMap) GetPlayers() Players {
 	pls := Players{}
 	w.Lock()

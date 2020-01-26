@@ -9,7 +9,7 @@ import (
 )
 
 var TILE_SIZE = 32
-var CHANK_SIZE = TILE_SIZE * TILE_SIZE
+var CHANK_SIZE = 32 * 32
 var PERLIN_SEED float32 = 1700
 
 type Chunk struct {

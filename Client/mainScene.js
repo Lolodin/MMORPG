@@ -57,7 +57,6 @@ class MainScene extends Phaser.Scene{
         Рисуем игроков на игровой карте
          */
         this.websocket.onmessage = (e)=> {
-
             let players = e.data
             players = JSON.parse(players)
             console.log(players)
@@ -200,7 +199,6 @@ let playerData = {Name: this.Player.name, X: this.Player.x, Y: this.Player.y}
     }
     //Отрисовка игроков
     DrawPlayers(players) {
-
 
         for (let i = 0; i<players.players.length; i++) {
             if (players.players[i].Name == this.Player.name) {

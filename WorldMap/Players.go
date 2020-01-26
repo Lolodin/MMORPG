@@ -4,8 +4,8 @@ import "Test/Chunk"
 
 type Player struct {
 	Name     string `json:"Name"`
-	X        int `json:"X"`
-	Y        int `json:"Y"`
+	X        int    `json:"X"`
+	Y        int    `json:"Y"`
 	speed    int
 	move     bool
 //	AnimKey string
@@ -15,11 +15,12 @@ type Players struct {
 	P []Player `json:"players"`
 }
 
-func NewPlayer(n string, id int) Player {
+func NewPlayer(n, password string, id int) Player {
 	p := Player{}
 	p.X = 0
 	p.Y = 0
 	p.Name = n
+
 
 	return p
 

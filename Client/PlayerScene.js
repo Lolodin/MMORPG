@@ -1,7 +1,11 @@
 export {PlayerScene}
+import {Identification} from "./Identification.js";
+
+
 class PlayerScene extends Phaser.Scene {
     constructor() {
         super("PlayerScene")
+        this.ID = {} // Аватар игрока для взаимодействия с сервером
         this.CurrentMap = [] // Текущая отрисованная карта, которая добавлена в группу
         this.LoadChunks = []// загруженные чанки
         this.coordinate = 0
@@ -20,10 +24,20 @@ class PlayerScene extends Phaser.Scene {
             frameWidth: 64,
         });
         this.load.image('Player', 'Client/ContentIso/Player.png');
+        this.ID.Name = 0 ;this.ID.x = 0; this.ID.y = 0; this.ID.Pass = 0
+        let ident = new Identification(this)
+        this.websocket = new WebSocket("ws://localhost:8080/player")
+        this.websocket.onopen = function (e) {
+            console.log("OPEN")
+        }
+        ident.inServer()
+
+
 
 
     }
-    create(){
+    create() {
+
         this.input.on('gameobjectup', function (pointer, gameObject)
         {
             gameObject.emit('clicked', gameObject);
@@ -37,48 +51,25 @@ class PlayerScene extends Phaser.Scene {
         console.log("start")
         this.GetServerMap(0,0)
         this.Player = this.add.image(0,0, "Player" )
+        this.ID.x = 0
+        this.ID.y = 0
         console.log(this.Player, "pl")
         this.Player.setDepth(2)
         this.CurrentChunk =  this.getChunkID(this.Player.x, this.Player.y)
         this.cameras.main.startFollow(this.Player, true)
         this.coordinate = this.getCurrentMap(this.CurrentChunk)
+        this.websocket.onmessage = (e)=> {
+            let players = e.data
+            players = JSON.parse(players)
+            console.log(players)
+        }
+
+
 
     }
     update(time, delta){
-        {
-            console.log(this.targetPath)
-            let p = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-            if (p.x< this.targetPath[0]) {
-                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-                cartesianCoord.x+=1
-                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-                this.Player.x = coordinatePlayer.x
-                this.Player.y = coordinatePlayer.y
-            }
-            if (p.x > this.targetPath[0]) {
-                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-                cartesianCoord.x-=1
-                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-                this.Player.x = coordinatePlayer.x
-                this.Player.y = coordinatePlayer.y
-            }
-            if (p.y > this.targetPath[1]) {
-                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-                cartesianCoord.y-=1
-                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-                this.Player.x = coordinatePlayer.x
-                this.Player.y = coordinatePlayer.y
-            }
-            if (p.y < this.targetPath[1]) {
-                let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
-                cartesianCoord.y+=1
-                let coordinatePlayer = this.cartesianToIsometric({X:cartesianCoord.x, Y: cartesianCoord.y})
-                this.Player.x = coordinatePlayer.x
-                this.Player.y = coordinatePlayer.y
-            }
-
-        }
-
+        let playerData = {Name: this.ID.Name, X: this.ID.x, Y: this.ID.y}   ;
+        this.websocket.send(JSON.stringify(playerData));
 
         let  nowChunk = this.getChunkID(this.Player.x, this.Player.y)
         if (nowChunk[0]!= this.CurrentChunk[0] || nowChunk[1]!=this.CurrentChunk[1]) {
@@ -88,8 +79,8 @@ class PlayerScene extends Phaser.Scene {
             this.coordinate = newCoordinate
             let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
             this.GetServerMap(cartesianCoord.x, cartesianCoord.y)
-
         }
+
     }
 
 

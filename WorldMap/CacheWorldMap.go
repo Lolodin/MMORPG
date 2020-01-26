@@ -59,7 +59,13 @@ func (w *WorldMap) AddPlayer(player Player) {
 		w.Player[player.Name] = player
 		w.Unlock()
 	} else {
-		fmt.Println("Player is Exile")
+		w.Lock()
+		if player.Password == w.Player[player.Name].Password {
+			w.Unlock()
+			fmt.Println("Relogin: "+player.Name)
+		} else {
+			panic("Error player Password")
+		}
 	}
 
 }
@@ -69,9 +75,7 @@ func (w *WorldMap) UpdatePlayer(player Player) {
 	p, ok := w.Player[player.Name]
 	w.Unlock()
 	if ok {
-		if w.CheckBusyTile(p.X, p.Y) {
-			return
-		}
+		p.
 		p.X = player.X
 		p.Y = player.Y
 		w.Lock()

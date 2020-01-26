@@ -5,8 +5,8 @@ import {PlayerScene} from "./PlayerScene.js";
 let config = {
     /*eslint no-undef:0*/
     type: Phaser.AUTO,
-    width: 1370,
-    height:800,
+    width: window.innerWidth*0.98,
+    height:window.innerHeight*0.95,
     disableContextMenu: true,
     background: 'black',
     physics: {

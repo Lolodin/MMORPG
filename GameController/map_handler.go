@@ -14,6 +14,9 @@ type requestMap struct {
 	Y        int
 	PlayerID int
 }
+type requestInit struct {
+
+}
 
 func Map_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -63,5 +66,22 @@ func Player_Handler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 
 		}
 
+	}
+}
+
+func Init_Handler() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("MAP HANDLER")
+		body, _ := ioutil.ReadAll(r.Body)
+
+		rm := requestMap{}
+
+		err := json.Unmarshal(body, &rm)
+		if err != nil {
+			fmt.Println("Error Marshaler")
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write()
 	}
 }

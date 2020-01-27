@@ -13,6 +13,7 @@ class PlayerScene extends Phaser.Scene {
         this.tileSize = 32
         this.chunkSize =  this.tileSize *  this.tileSize
         this.targetPath = [0,0] // Путь куда должен двигаться персонаж
+        this.activePlayers = [] // Активные игроки на сцене
 
             }
 
@@ -62,14 +63,13 @@ class PlayerScene extends Phaser.Scene {
             let players = e.data
             players = JSON.parse(players)
             console.log(players)
+            this.DrawPlayer(players.players)
         }
 
 
 
     }
     update(time, delta){
-        let playerData = {Name: this.ID.Name, X: this.ID.x, Y: this.ID.y}   ;
-        this.websocket.send(JSON.stringify(playerData));
 
         let  nowChunk = this.getChunkID(this.Player.x, this.Player.y)
         if (nowChunk[0]!= this.CurrentChunk[0] || nowChunk[1]!=this.CurrentChunk[1]) {
@@ -82,7 +82,29 @@ class PlayerScene extends Phaser.Scene {
         }
 
     }
+DrawPlayer(players) {
+for (let i = 0; i<players.length; i++) {
+    if (players[i].Name == this.ID.Name) {
+     let coord = this.cartesianToIsometric(players[i].X,players[i].Y)
+        this.Player.x = coord.x
+        this.Player.y = coord.y
+    }
+    if (!this.activePlayers[players[i].Name] && players[i].Name != this.ID.name) {
+        let coord = this.cartesianToIsometric(players[i].X,players[i].Y)
+        this.activePlayers[players[i].Name] = this.add.container(coord.x,coord.y)
+        let player =  this.add.image(0,0, "Player")
+        let Text = this.add.text(-players[i].Name.length*5,-23,players[i].Name)
+        this.activePlayers[players[i].Name].setDepth(2)
+        this.activePlayers[players[i].Name].add(player)
+        this.activePlayers[players[i].Name].add(Text)
+    } else if(this.activePlayers[players[i].Name] && players[i].Name != this.ID.name) {
 
+        let coord = this.cartesianToIsometric(players[i].X,players[i].Y)
+        this.activePlayers[players[i].Name].x =coord.x
+        this.activePlayers[players[i].Name].y =coord.y
+    }
+}
+}
 
 //Работа с картой и координатами
     async GetServerMap(X, Y) {

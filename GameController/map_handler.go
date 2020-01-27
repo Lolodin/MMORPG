@@ -51,6 +51,7 @@ func Player_Handler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 		player := WorldMap.Player{}
 		websocket.JSON.Receive(ws, &player)
 		fmt.Println()
+
 		W.AddPlayer(player)
 
 		//Game Loop

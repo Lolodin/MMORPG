@@ -59,23 +59,18 @@ func (w *WorldMap) AddPlayer(player Player) {
 		w.Player[player.Name] = player
 		w.Unlock()
 	} else {
-		w.Lock()
-		if player.Password == w.Player[player.Name].Password {
-			w.Unlock()
 			fmt.Println("Relogin: "+player.Name)
-		} else {
-			panic("Error player Password")
 		}
 	}
 
-}
+
 // Обновляем данные персонажа в мире
 func (w *WorldMap) UpdatePlayer(player Player) {
 	w.Lock()
 	p, ok := w.Player[player.Name]
 	w.Unlock()
 	if ok {
-		p.
+
 		p.X = player.X
 		p.Y = player.Y
 		w.Lock()

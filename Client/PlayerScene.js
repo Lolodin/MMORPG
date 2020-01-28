@@ -11,7 +11,7 @@ class PlayerScene extends Phaser.Scene {
         this.coordinate = 0
         this.CurrentChunk =0
         this.tileSize = 32
-        this.chunkSize =  this.tileSize *  this.tileSize
+        this.chunkSize =  32 *  32
         this.targetPath = [0,0] // Путь куда должен двигаться персонаж
         this.activePlayers = [] // Активные игроки на сцене
 
@@ -54,6 +54,7 @@ class PlayerScene extends Phaser.Scene {
         this.CurrentChunk =  this.getChunkID(coord.x,coord.y)
         this.Player = this.add.image(this.ID.x,this.ID.y, "Player")
         this.cameras.main.startFollow(this.Player, true)
+        this.cameras.main.zoom = 0.97
         this.coordinate = this.getCurrentMap(this.CurrentChunk)
         this.websocket.onmessage = (e)=> {
           //  console.log("on message")
@@ -159,6 +160,7 @@ tile.setInteractive()
        this.targetPath[1] = coord.y
         console.log(this.targetPath)
     }, this)
+    tile.active = false
 
 // add tile in ChunkGroup
     this.CurrentMap[chunkID].add(tile)

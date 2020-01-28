@@ -16,8 +16,8 @@ let config = {
         }
     },
     scene:[PlayerScene],
-    pixelArt: false,
-    roundPixels: false,
+    pixelArt: true,
+    roundPixels: true,
     antialias: false
 
 }

@@ -3,7 +3,7 @@ class Identification {
     constructor(scene) {
         this.Scene = scene
     }
-
+// Идентификация на сервере, получение данных персонажа
   async  inServer() {
         let user = prompt("Введите имя вашего персонажа", "Anon")
         let pass = prompt("Введите пароль", "123456")

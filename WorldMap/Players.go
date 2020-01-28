@@ -25,7 +25,7 @@ func NewPlayer(n, password string) *Player {
 	p.Y = 0
 	p.Name = n
 	p.password = password
-	p.speed = 1
+	p.speed = 5
 	p.walkPath.X = p.X
 	p.walkPath.Y = p.Y
 	go p.walk()

@@ -62,8 +62,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= TILE_SIZE {
 				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= TILE_SIZE {
 
-					posX := float32(x - 8)
-					posY := float32(y + 8)
+					posX := float32(x - (TILE_SIZE/2))
+					posY := float32(y + (TILE_SIZE/2))
 					tile := Tile{}
 
 					tile.X = int(posX)
@@ -96,8 +96,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 		{
 			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= TILE_SIZE {
 				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += TILE_SIZE {
-					posX := float32(x - 8)
-					posY := float32(y + 8)
+					posX := float32(x - (TILE_SIZE/2))
+					posY := float32(y + (TILE_SIZE/2))
 
 					tile := Tile{}
 
@@ -131,8 +131,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += TILE_SIZE {
 				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= TILE_SIZE {
 
-					posX := float32(x + 8)
-					posY := float32(y - 8)
+					posX := float32(x + (TILE_SIZE/2))
+					posY := float32(y - (TILE_SIZE/2))
 					tile := Tile{}
 
 					tile.X = int(posX)
@@ -161,8 +161,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 		{
 			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += TILE_SIZE {
 				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += TILE_SIZE {
-					posX := float32(x + 8)
-					posY := float32(y + 8)
+					posX := float32(x + (TILE_SIZE/2))
+					posY := float32(y + (TILE_SIZE/2))
 					tile := Tile{}
 
 					tile.X = int(posX)

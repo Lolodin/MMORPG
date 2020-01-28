@@ -70,9 +70,9 @@ func lerp(a, b, c float32) float32 {
 
 }
 func curve(t float32) float32 {
-	le := (1 - math.Cos(float64(t)*math.Pi)) / 2
-	return float32(le)
+	//le := (1 - math.Cos(float64(t)*math.Pi)) / 2
+	return (t*t*t*(t*(t*6-15)+10))
 	//t = t*0.1222
-	//return   t * t * (t * (t * 6 - 15) + 10)
+	//return   t * t * t * (t * 6 - 15) + 10)
 	//return t * t * (3. - 2. * t)
 }

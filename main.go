@@ -12,6 +12,7 @@ import (
 func main() {
 	fmt.Println("start")
 	World := WorldMap.NewCacheWorldMap()
+	http.HandleFunc("/init", GameController.Init_Handler(&World))
 	http.HandleFunc("/map", GameController.Map_Handler(&World))
 	http.Handle("/player", websocket.Handler(GameController.Player_Handler(&World)))
 	http.HandleFunc("/", indexHandler)

@@ -25,22 +25,22 @@ class PlayerScene extends Phaser.Scene {
             frameWidth: 64,
         });
         this.load.image('Player', 'Client/ContentIso/Player.png');
-        this.ID.Name = 0 ;this.ID.x = 0; this.ID.y = 0; this.ID.Pass = 0
+
         let ident = new Identification(this)
-        this.websocket = new WebSocket("ws://localhost:8080/player")
-        this.websocket.onopen = function (e) {
-            console.log("OPEN")
-        }
         ident.inServer()
+        this.websocket = new WebSocket("ws://localhost:8080/player")
+        this.websocket.onopen = (e) => {
+            console.log("OPEN", e)
+        }
+
+
 
 
 
 
     }
     create() {
-
-        this.input.on('gameobjectup', function (pointer, gameObject)
-        {
+        this.input.on('gameobjectup', function (pointer, gameObject){
             gameObject.emit('clicked', gameObject);
         }, this);
         this.anims.create({
@@ -49,20 +49,17 @@ class PlayerScene extends Phaser.Scene {
             frameRate: 2,
             repeat: -1
         });
-        console.log("start")
-        this.GetServerMap(0,0)
-        this.Player = this.add.image(0,0, "Player" )
-        this.ID.x = 0
-        this.ID.y = 0
-        console.log(this.Player, "pl")
-        this.Player.setDepth(2)
-        this.CurrentChunk =  this.getChunkID(this.Player.x, this.Player.y)
+        this.GetServerMap(this.ID.x,this.ID.x)
+        let coord = this.isometricTocartesian({x:this.ID.x,y:this.ID.y})
+        this.CurrentChunk =  this.getChunkID(coord.x,coord.y)
+        this.Player = this.add.image(this.ID.x,this.ID.y, "Player")
         this.cameras.main.startFollow(this.Player, true)
         this.coordinate = this.getCurrentMap(this.CurrentChunk)
         this.websocket.onmessage = (e)=> {
+          //  console.log("on message")
             let players = e.data
             players = JSON.parse(players)
-            console.log(players)
+          //  console.log(players)
             this.DrawPlayer(players.players)
         }
 
@@ -70,36 +67,44 @@ class PlayerScene extends Phaser.Scene {
 
     }
     update(time, delta){
-
-        let  nowChunk = this.getChunkID(this.Player.x, this.Player.y)
+        if (this.websocket.readyState === 1) {
+            let playerData = {name: this.ID.Name,  x: this.targetPath[0], y: this.targetPath[1]}
+            this.websocket.send(JSON.stringify(playerData))
+        }
+        let coord = this.isometricTocartesian({x:this.Player.x,y:this.Player.y})
+        let  nowChunk = this.getChunkID(coord.x, coord.y)
         if (nowChunk[0]!= this.CurrentChunk[0] || nowChunk[1]!=this.CurrentChunk[1]) {
             let newCoordinate = this.getCurrentMap(nowChunk)
             this.CurrentChunk =  nowChunk
             this.clearMap(newCoordinate)
             this.coordinate = newCoordinate
-            let cartesianCoord = this.isometricTocartesian({X:this.Player.x, Y: this.Player.y})
+            let cartesianCoord = this.isometricTocartesian({x:this.Player.x, y: this.Player.y})
             this.GetServerMap(cartesianCoord.x, cartesianCoord.y)
         }
+
+
+
+
 
     }
 DrawPlayer(players) {
 for (let i = 0; i<players.length; i++) {
     if (players[i].Name == this.ID.Name) {
-     let coord = this.cartesianToIsometric(players[i].X,players[i].Y)
+     let coord = this.cartesianToIsometric(players[i])
         this.Player.x = coord.x
         this.Player.y = coord.y
     }
     if (!this.activePlayers[players[i].Name] && players[i].Name != this.ID.name) {
-        let coord = this.cartesianToIsometric(players[i].X,players[i].Y)
+        let coord = this.cartesianToIsometric(players[i])
         this.activePlayers[players[i].Name] = this.add.container(coord.x,coord.y)
         let player =  this.add.image(0,0, "Player")
-        let Text = this.add.text(-players[i].Name.length*5,-23,players[i].Name)
+        let Text = this.add.text(-players[i].Name.length*5,-30,players[i].Name)
         this.activePlayers[players[i].Name].setDepth(2)
         this.activePlayers[players[i].Name].add(player)
         this.activePlayers[players[i].Name].add(Text)
     } else if(this.activePlayers[players[i].Name] && players[i].Name != this.ID.name) {
 
-        let coord = this.cartesianToIsometric(players[i].X,players[i].Y)
+        let coord = this.cartesianToIsometric(players[i])
         this.activePlayers[players[i].Name].x =coord.x
         this.activePlayers[players[i].Name].y =coord.y
     }
@@ -147,9 +152,12 @@ for (let coordTile in chunk) {
     }
 tile.setInteractive()
     tile.on('clicked', (tile)=>{
-        let coord = this.isometricTocartesian({X: tile.x, Y: tile.y})
+        tile.alpha = 0.5
+        setTimeout(()=>tile.alpha =1, 1000)
+        let coord = this.isometricTocartesian(tile)
        this.targetPath[0] = coord.x
        this.targetPath[1] = coord.y
+        console.log(this.targetPath)
     }, this)
 
 // add tile in ChunkGroup
@@ -157,12 +165,14 @@ tile.setInteractive()
 
 }
     }
+    //cartIso {x: xx y: yy}
     isometricTocartesian(cartIso) {
-        let tempISO = new Phaser.Geom.Point((2*cartIso.Y + cartIso.X)/2,(2*cartIso.Y - cartIso.X)/2 )
+        let tempISO = new Phaser.Geom.Point((2*cartIso.y + cartIso.x)/2,(2*cartIso.y - cartIso.x)/2 )
         return tempISO
     }
+    //cattPt{x: xx y: yy}
     cartesianToIsometric(cartPt){
-        let tempPt=new Phaser.Geom.Point(cartPt.X-cartPt.Y,(cartPt.X+cartPt.Y)/2 );
+        let tempPt=new Phaser.Geom.Point(cartPt.x-cartPt.y,(cartPt.x+cartPt.y)/2 );
         return (tempPt);
     }
     //Возвращает карту чанка

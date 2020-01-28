@@ -23,16 +23,16 @@ type Chunk struct {
 */
 type Tile struct {
 	Key string `json:"key"`
-	X   int
-	Y   int
+	X   int `json:"x"`
+	Y   int `json:"y"`
 }
 
 /*
 Универсальная структура для хранения координат
 */
 type Coordinate struct {
-	X int
-	Y int
+	X int `json:"x"`
+	Y int `json:"y"`
 }
 
 func (t Coordinate) MarshalText() ([]byte, error) {
@@ -73,7 +73,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 					switch {
 					case perlinValue < -0.01:
 						tile.Key = "Water"
-					case perlinValue >= -0.01 && perlinValue <0 :
+					case perlinValue >= -0.01 && perlinValue < 0:
 						tile.Key = "Sand"
 					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
@@ -98,7 +98,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += TILE_SIZE {
 					posX := float32(x - 8)
 					posY := float32(y + 8)
-					fmt.Println("COORDINATE", posX, posY)
+
 					tile := Tile{}
 
 					tile.X = int(posX)

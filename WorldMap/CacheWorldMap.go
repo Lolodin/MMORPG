@@ -9,7 +9,7 @@ import (
 type WorldMap struct {
 	sync.Mutex
 	Chunks map[Chunk.Coordinate]Chunk.Chunk
-	Player map[string]Player
+	Player map[string]*Player
 	Tree   *Chunk.Tree
 }
 
@@ -46,11 +46,12 @@ func (w *WorldMap) isChunkExist(coordinate Chunk.Coordinate) bool {
 func NewCacheWorldMap() WorldMap {
 	world := WorldMap{}
 	world.Chunks = make(map[Chunk.Coordinate]Chunk.Chunk)
-	world.Player = make(map[string]Player)
+	world.Player = make(map[string]*Player)
 	return world
 }
+
 //Добавляем нового игрока в карту
-func (w *WorldMap) AddPlayer(player Player) {
+func (w *WorldMap) AddPlayer(player *Player) {
 
 	_, ok := w.Player[player.Name]
 	if !ok {
@@ -59,10 +60,9 @@ func (w *WorldMap) AddPlayer(player Player) {
 		w.Player[player.Name] = player
 		w.Unlock()
 	} else {
-			fmt.Println("Relogin: "+player.Name)
-		}
+		fmt.Println("Relogin: " + player.Name)
 	}
-
+}
 
 // Обновляем данные персонажа в мире
 func (w *WorldMap) UpdatePlayer(player Player) {
@@ -82,12 +82,13 @@ func (w *WorldMap) UpdatePlayer(player Player) {
 	}
 
 }
+
 //map players
 func (w *WorldMap) GetPlayers() Players {
 	pls := Players{}
 	w.Lock()
 	for _, P := range w.Player {
-		pls.P = append(pls.P, P)
+		pls.P = append(pls.P, *P)
 	}
 	w.Unlock()
 	return pls
@@ -103,4 +104,15 @@ func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
 	_, ok := objChunk.Tree[Chunk.Coordinate{X: PX, Y: PY}]
 	w.Unlock()
 	return ok
+}
+
+//Получить player
+func (w *WorldMap) GetPlayer(name string) (*Player, bool) {
+	pl, ok := w.Player[name]
+	if ok {
+		return pl, ok
+	} else {
+		return &Player{}, ok
+	}
+
 }

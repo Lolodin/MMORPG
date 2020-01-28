@@ -1,6 +1,7 @@
 package GameController
 
 import (
+	"Test/Chunk"
 	"Test/WorldMap"
 	"encoding/json"
 	"fmt"
@@ -14,8 +15,9 @@ type requestMap struct {
 	Y        int
 	PlayerID int
 }
-type requestInit struct {
-
+type pingPlayer struct {
+	Name string `json:"name"`
+	Chunk.Coordinate
 }
 
 func Map_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) {
@@ -51,38 +53,20 @@ func Player_Handler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 
 		}()
 
-		player := WorldMap.Player{}
+		player := pingPlayer{}
 		websocket.JSON.Receive(ws, &player)
-		fmt.Println()
+		fmt.Println(player)
 
-		W.AddPlayer(player)
 
 		//Game Loop
 		fmt.Println("Connect Player", player.Name)
 		for {
 			websocket.JSON.Receive(ws, &player)
-			W.UpdatePlayer(player)
+			W.Player[player.Name].SetWalkPath(player.X, player.Y)
 			pls := W.GetPlayers()
 			websocket.JSON.Send(ws, pls)
 
 		}
 
-	}
-}
-
-func Init_Handler() func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("MAP HANDLER")
-		body, _ := ioutil.ReadAll(r.Body)
-
-		rm := requestMap{}
-
-		err := json.Unmarshal(body, &rm)
-		if err != nil {
-			fmt.Println("Error Marshaler")
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write()
 	}
 }

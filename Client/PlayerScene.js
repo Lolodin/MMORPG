@@ -18,6 +18,7 @@ class PlayerScene extends Phaser.Scene {
             }
 
     preload(){
+
         this.load.image('Sand', 'Client/ContentIso/Sand.png');
         this.load.image('Ground', 'Client/ContentIso/sprGrass.png');
         this.load.spritesheet('Water', 'Client/ContentIso/Water.png', {
@@ -45,7 +46,7 @@ class PlayerScene extends Phaser.Scene {
         }, this);
         this.anims.create({
             key: 'water',
-            frames: this.anims.generateFrameNumbers('Water'),
+            frames: this.anims.generateFrameNumbers('Water', {start: 0, end: 1}),
             frameRate: 2,
             repeat: -1
         });
@@ -53,8 +54,8 @@ class PlayerScene extends Phaser.Scene {
         let coord = this.isometricTocartesian({x:this.ID.x,y:this.ID.y})
         this.CurrentChunk =  this.getChunkID(coord.x,coord.y)
         this.Player = this.add.image(this.ID.x,this.ID.y, "Player")
-        this.cameras.main.startFollow(this.Player, true)
-        this.cameras.main.zoom = 0.97
+        this.cameras.main.startFollow(this.ID, true)
+        this.cameras.main.zoom = 0.5
         this.coordinate = this.getCurrentMap(this.CurrentChunk)
         this.websocket.onmessage = (e)=> {
           //  console.log("on message")
@@ -72,14 +73,14 @@ class PlayerScene extends Phaser.Scene {
             let playerData = {name: this.ID.Name,  x: this.targetPath[0], y: this.targetPath[1]}
             this.websocket.send(JSON.stringify(playerData))
         }
-        let coord = this.isometricTocartesian({x:this.Player.x,y:this.Player.y})
+        let coord = this.isometricTocartesian({x:this.ID.x,y:this.ID.y})
         let  nowChunk = this.getChunkID(coord.x, coord.y)
         if (nowChunk[0]!= this.CurrentChunk[0] || nowChunk[1]!=this.CurrentChunk[1]) {
             let newCoordinate = this.getCurrentMap(nowChunk)
             this.CurrentChunk =  nowChunk
             this.clearMap(newCoordinate)
             this.coordinate = newCoordinate
-            let cartesianCoord = this.isometricTocartesian({x:this.Player.x, y: this.Player.y})
+            let cartesianCoord = this.isometricTocartesian({x:this.ID.x, y: this.ID.y})
             this.GetServerMap(cartesianCoord.x, cartesianCoord.y)
         }
 
@@ -92,14 +93,18 @@ DrawPlayer(players) {
 for (let i = 0; i<players.length; i++) {
     if (players[i].Name == this.ID.Name) {
      let coord = this.cartesianToIsometric(players[i])
-        this.Player.x = coord.x
-        this.Player.y = coord.y
+        this.ID.x = coord.x
+        this.ID.y = coord.y
     }
     if (!this.activePlayers[players[i].Name] && players[i].Name != this.ID.name) {
+
+
         let coord = this.cartesianToIsometric(players[i])
         this.activePlayers[players[i].Name] = this.add.container(coord.x,coord.y)
-        let player =  this.add.image(0,0, "Player")
-        let Text = this.add.text(-players[i].Name.length*5,-30,players[i].Name)
+        let player =  this.add.image(0,-32, "Player")
+        let Text = this.add.text(-players[i].Name.length*5,-72,players[i].Name)
+        Text.setFontSize(30)
+
         this.activePlayers[players[i].Name].setDepth(2)
         this.activePlayers[players[i].Name].add(player)
         this.activePlayers[players[i].Name].add(Text)
@@ -148,6 +153,7 @@ for (let coordTile in chunk) {
     if(chunk[coordTile].key == "Water") {
        tile = this.add.sprite(coordinate.x, coordinate.y,chunk[coordTile].key)
        tile.play("water")
+
     } else {
        tile = this.add.image(coordinate.x, coordinate.y,chunk[coordTile].key )
     }

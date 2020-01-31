@@ -25,7 +25,10 @@ class PlayerScene extends Phaser.Scene {
             frameHeight: 32,
             frameWidth: 64,
         });
-        this.load.image('Player', 'Client/ContentIso/Player.png');
+        this.load.spritesheet('Player', 'Client/ContentIso/Player.png', {
+            frameHeight: 64, frameWidth: 64
+        });
+
 
         let ident = new Identification(this)
         ident.inServer()
@@ -41,15 +44,21 @@ class PlayerScene extends Phaser.Scene {
 
     }
     create() {
-        this.input.on('gameobjectup', function (pointer, gameObject){
-            gameObject.emit('clicked', gameObject);
-        }, this);
         this.anims.create({
             key: 'water',
-            frames: this.anims.generateFrameNumbers('Water', {start: 0, end: 1}),
+            frames: this.anims.generateFrameNumbers('Water'),
+            frameRate: 5,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'PlayerTurn',
+            frames: this.anims.generateFrameNumbers('Player'),
             frameRate: 2,
             repeat: -1
         });
+        this.input.on('gameobjectup', function (pointer, gameObject){
+            gameObject.emit('clicked', gameObject);
+        }, this);
         this.GetServerMap(this.ID.x,this.ID.x)
         let coord = this.isometricTocartesian({x:this.ID.x,y:this.ID.y})
         this.CurrentChunk =  this.getChunkID(coord.x,coord.y)
@@ -101,9 +110,13 @@ for (let i = 0; i<players.length; i++) {
 
         let coord = this.cartesianToIsometric(players[i])
         this.activePlayers[players[i].Name] = this.add.container(coord.x,coord.y)
-        let player =  this.add.image(0,-32, "Player")
-        let Text = this.add.text(-players[i].Name.length*5,-72,players[i].Name)
-        Text.setFontSize(30)
+        let player =  this.add.sprite(0,-32, "Player")
+        player.play("PlayerTurn")
+        let Text = this.add.text(-players[i].Name.length*5,-78,players[i].Name, {fontFamily: 'Arial'})
+
+
+
+
 
         this.activePlayers[players[i].Name].setDepth(2)
         this.activePlayers[players[i].Name].add(player)
@@ -151,8 +164,9 @@ for (let coordTile in chunk) {
     let tile
     let coordinate = this.cartesianToIsometric(chunk[coordTile])
     if(chunk[coordTile].key == "Water") {
-       tile = this.add.sprite(coordinate.x, coordinate.y,chunk[coordTile].key)
-       tile.play("water")
+       tile = this.add.sprite(coordinate.x, coordinate.y, chunk[coordTile].key).play('water', true);
+
+
 
     } else {
        tile = this.add.image(coordinate.x, coordinate.y,chunk[coordTile].key )
@@ -166,7 +180,7 @@ tile.setInteractive()
        this.targetPath[1] = coord.y
         console.log(this.targetPath)
     }, this)
-    tile.active = false
+   // tile.active = false
 
 // add tile in ChunkGroup
     this.CurrentMap[chunkID].add(tile)

@@ -51,7 +51,6 @@ class MainScene extends Phaser.Scene{
         this.Player.y = 8
        this.P.setDepth(2)
        this.cameras.main.startFollow(this.P, true)
-        this.cameras.main.zoom = 0.5
         this.GetServerMap(this.P.x, this.P.y)
 
         /*

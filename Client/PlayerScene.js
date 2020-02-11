@@ -1,5 +1,6 @@
 export {PlayerScene}
 import {Identification} from "./Identification.js";
+import {Players} from "./Players.js";
 
 
 class PlayerScene extends Phaser.Scene {
@@ -13,7 +14,7 @@ class PlayerScene extends Phaser.Scene {
         this.tileSize = 32
         this.chunkSize =  32 *  32
         this.targetPath = [0,0] // Путь куда должен двигаться персонаж
-        this.activePlayers = [] // Активные игроки на сцене
+
 
             }
 
@@ -50,28 +51,24 @@ class PlayerScene extends Phaser.Scene {
             frameRate: 5,
             repeat: -1
         });
-        this.anims.create({
-            key: 'PlayerTurn',
-            frames: this.anims.generateFrameNumbers('Player'),
-            frameRate: 2,
-            repeat: -1
-        });
+        this.Players = new Players(this)
         this.input.on('gameobjectup', function (pointer, gameObject){
             gameObject.emit('clicked', gameObject);
         }, this);
+        // Получаем текущую карту
         this.GetServerMap(this.ID.x,this.ID.x)
+            // Координаты
         let coord = this.isometricTocartesian({x:this.ID.x,y:this.ID.y})
         this.CurrentChunk =  this.getChunkID(coord.x,coord.y)
         this.Player = this.add.image(this.ID.x,this.ID.y, "Player")
         this.cameras.main.startFollow(this.ID, true)
-        this.cameras.main.zoom = 0.5
         this.coordinate = this.getCurrentMap(this.CurrentChunk)
         this.websocket.onmessage = (e)=> {
           //  console.log("on message")
             let players = e.data
             players = JSON.parse(players)
           //  console.log(players)
-            this.DrawPlayer(players.players)
+            this.Players.DrawPlayer(players.players)
         }
 
 
@@ -98,38 +95,6 @@ class PlayerScene extends Phaser.Scene {
 
 
     }
-DrawPlayer(players) {
-for (let i = 0; i<players.length; i++) {
-    if (players[i].Name == this.ID.Name) {
-     let coord = this.cartesianToIsometric(players[i])
-        this.ID.x = coord.x
-        this.ID.y = coord.y
-    }
-    if (!this.activePlayers[players[i].Name] && players[i].Name != this.ID.name) {
-
-
-        let coord = this.cartesianToIsometric(players[i])
-        this.activePlayers[players[i].Name] = this.add.container(coord.x,coord.y)
-        let player =  this.add.sprite(0,-32, "Player")
-        player.play("PlayerTurn")
-        let Text = this.add.text(-players[i].Name.length*5,-78,players[i].Name, {fontFamily: 'Arial'})
-
-
-
-
-
-        this.activePlayers[players[i].Name].setDepth(2)
-        this.activePlayers[players[i].Name].add(player)
-        this.activePlayers[players[i].Name].add(Text)
-    } else if(this.activePlayers[players[i].Name] && players[i].Name != this.ID.name) {
-
-        let coord = this.cartesianToIsometric(players[i])
-        this.activePlayers[players[i].Name].x =coord.x
-        this.activePlayers[players[i].Name].y =coord.y
-    }
-}
-}
-
 //Работа с картой и координатами
     async GetServerMap(X, Y) {
         let Data = {x:X,y:Y, playerID:2}

@@ -62,7 +62,7 @@ class PlayerScene extends Phaser.Scene {
             // Координаты
         let coord = this.isometricTocartesian({x:this.ID.x,y:this.ID.y})
         this.CurrentChunk =  this.getChunkID(coord.x,coord.y)
-        this.Player = this.add.image(this.ID.x,this.ID.y, "Player")
+       // this.Player = this.add.image(this.ID.x,this.ID.y, "Player")
         this.cameras.main.startFollow(this.ID, true)
         this.coordinate = this.getCurrentMap(this.CurrentChunk)
         this.websocket.onmessage = (e)=> {

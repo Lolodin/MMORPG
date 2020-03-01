@@ -19,5 +19,8 @@ func NewTree(coordinate Coordinate) Tree {
 	t.Species = SPECIES[rand.Intn(len(SPECIES))]
 	t.X = coordinate.X
 	t.Y = coordinate.Y
+	if t.Age == 0 {
+		t.Species = "Oak"
+	}
 	return t
 }

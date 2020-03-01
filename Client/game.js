@@ -1,5 +1,6 @@
 //import {MainScene} from "./mainScene.js";
 import {PlayerScene} from "./PlayerScene.js";
+import {GameMenu} from "./GameMenu.js";
 
 
 let config = {

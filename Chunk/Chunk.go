@@ -88,7 +88,10 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Mount"
 					}
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
-					treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					if tree.Species != "" {
+						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					}
+
 
 				}
 			}
@@ -122,7 +125,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
-					treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					if tree.Species != "" {
+						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					}
 
 				}
 			}
@@ -153,7 +158,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Mount"
 					}
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
-					treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					if tree.Species != "" {
+						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					}
 
 				}
 			}
@@ -184,7 +191,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Mount"
 					}
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
-					treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					if tree.Species != "" {
+						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+					}
 
 				}
 			}

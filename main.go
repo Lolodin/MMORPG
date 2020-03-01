@@ -12,9 +12,9 @@ import (
 func main() {
 	fmt.Println("start")
 	World := WorldMap.NewCacheWorldMap()
-	http.HandleFunc("/init", GameController.Init_Handler(&World))
+	http.HandleFunc("/init", GameController.InitHandler(&World))
 	http.HandleFunc("/map", GameController.Map_Handler(&World))
-	http.Handle("/player", websocket.Handler(GameController.Player_Handler(&World)))
+	http.Handle("/player", websocket.Handler(GameController.PlayerHandler(&World)))
 	http.HandleFunc("/", indexHandler)
 	http.Handle("/node_modules/phaser/dist/", http.StripPrefix("/node_modules/phaser/dist/", http.FileServer(http.Dir("./node_modules/phaser/dist/"))))
 	http.Handle("/Client/", http.StripPrefix("/Client/", http.FileServer(http.Dir("./Client/"))))
@@ -25,7 +25,7 @@ func main() {
 	}
 
 }
-
+// Обработчик для index.html, здесь мы просто отдаем клиент пользователю
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("indexAction")
 	t, _ := template.ParseFiles("test.html")

@@ -2,10 +2,12 @@ package WorldMap
 
 import (
 	"Test/Chunk"
+	"sync"
 	"time"
 )
 
 type Player struct {
+	mut      sync.Mutex
 	Name     string `json:"Name"`
 	X        int    `json:"x"`
 	Y        int    `json:"y"`
@@ -26,9 +28,7 @@ func NewPlayer(n, password string) *Player {
 	p.Name = n
 	p.password = password
 	p.speed = 5
-	p.walkPath.X = p.X
-	p.walkPath.Y = p.Y
-	go p.walk()
+	p.move = false
 
 	return &p
 
@@ -44,6 +44,10 @@ func (p *Player) SetWalkPath(x, y int) {
 	if p.X != x && p.Y != y {
 		xy := Chunk.Coordinate{X: x, Y: y}
 		p.walkPath = xy
+		if !p.move {
+			go p.walk()
+		}
+
 	} else {
 		return
 	}
@@ -70,13 +74,23 @@ func (p *Player) ComparePassword(pass string) bool {
 		return false
 	}
 }
+func (p *Player) moveSwitch() {
+	if p.move {
+		p.move = false
+	} else {
+		p.move = true
+	}
+}
 func (p *Player) walk() {
-	for  {
+	p.mut.Lock()
+	p.move = true
+	p.mut.Unlock()
+	for p.move {
 		time.Sleep(25 * time.Millisecond)
-		if p.Y >p.walkPath.Y {
- 				p.Y -= p.speed
+		if p.Y > p.walkPath.Y {
+			p.Y -= p.speed
 		}
-		if p.Y <p.walkPath.Y {
+		if p.Y < p.walkPath.Y {
 			p.Y += p.speed
 		}
 		if p.X > p.walkPath.X {
@@ -84,6 +98,12 @@ func (p *Player) walk() {
 		}
 		if p.X < p.walkPath.X {
 			p.X += p.speed
+		}
+		if (p.X == p.walkPath.X && p.Y == p.walkPath.Y) || p.move == false {
+			p.mut.Lock()
+			p.move = false
+			p.mut.Unlock()
+			return
 		}
 	}
 

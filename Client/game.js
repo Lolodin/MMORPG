@@ -5,9 +5,10 @@ import {PlayerScene} from "./PlayerScene.js";
 let config = {
     /*eslint no-undef:0*/
     scale: {
-        mode: Phaser.Scale.FIT,
-        width: 1536,
-        height: 869
+        mode: Phaser.Scale.ENVELOP,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 1920   ,
+        height: 1080
     },
     disableContextMenu: true,
     background: 'black',

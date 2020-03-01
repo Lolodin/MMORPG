@@ -33,7 +33,7 @@ func Map_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 		}
 		fmt.Println(rm.X, rm.Y)
 
-		c := WorldMap.GetChankID(rm.X, rm.Y)
+		c := WorldMap.GetChunkID(rm.X, rm.Y)
 		d := WorldMap.GetCurrentPlayerMap(c)
 		x := WorldMap.GetPlayerDrawChunkMap(d, W)
 		playerMap := WorldMap.MapToJSON(x, rm.PlayerID)
@@ -44,7 +44,7 @@ func Map_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 
 }
 
-func Player_Handler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
+func PlayerHandler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 	return func(ws *websocket.Conn) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -57,14 +57,18 @@ func Player_Handler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 		websocket.JSON.Receive(ws, &player)
 		fmt.Println(player)
 
-
 		//Game Loop
 		fmt.Println("Connect Player", player.Name)
 		for {
-			websocket.JSON.Receive(ws, &player)
+			err := websocket.JSON.Receive(ws, &player)
+			if err != nil {
+				err.Error()
+				return
+			}
 			W.Player[player.Name].SetWalkPath(player.X, player.Y)
 			pls := W.GetPlayers()
 			websocket.JSON.Send(ws, pls)
+			fmt.Println("Ping", player.Name, player.X, player.Y)
 
 		}
 

@@ -20,7 +20,7 @@ type responsePlayer struct {
 }
 
 // Точка входа в игры, юзер отправляет нам свои данные, мы отдаем данные персонажа, уникальный ид или name через которое будет совершенно socket подключение
-func Init_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) {
+func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Init")
 		body, _ := ioutil.ReadAll(r.Body)
@@ -58,7 +58,6 @@ func Init_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request)
 			return
 
 		}
-
 
 	}
 }

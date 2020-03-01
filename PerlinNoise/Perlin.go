@@ -45,7 +45,7 @@ func Noise(x, y float32) float32 {
 func getRandomVector(x, y float32) []float32 {
 	rand.Seed(int64(x * y))
 	v := rand.Intn(3)
-	//fmt.Println(v, "#Vectors")
+
 	switch v {
 
 	case 0:
@@ -66,13 +66,10 @@ func dot(a []float32, b []float32) float32 {
 func lerp(a, b, c float32) float32 {
 
 	return a*(1-c) + b*c
-	//return a +c*(b-a)
 
 }
 func curve(t float32) float32 {
-	//le := (1 - math.Cos(float64(t)*math.Pi)) / 2
-	return (t*t*t*(t*(t*6-15)+10))
-	//t = t*0.1222
-	//return   t * t * t * (t * 6 - 15) + 10)
-	//return t * t * (3. - 2. * t)
+
+	return (t * t * t * (t*(t*6-15) + 10))
+
 }

@@ -9,9 +9,10 @@ class PlayerScene extends Phaser.Scene {
         this.ID = {} // Аватар игрока для взаимодействия с сервером
         this.CurrentMap = [] // Текущая отрисованная карта, которая добавлена в группу
         this.LoadChunks = []// загруженные чанки
+        this.LoadChunksTree = [] // Деревья
         this.coordinate = 0
         this.CurrentChunk =0
-        this.tileSize = 32
+        this.CHUNKIDSIZE = 32
         this.chunkSize =  32 *  32
         this.targetPath = [0,0] // Путь куда должен двигаться персонаж
 
@@ -19,7 +20,8 @@ class PlayerScene extends Phaser.Scene {
             }
 
     preload(){
-
+        this.load.image('Oak', 'Client/ContentIso/Oak.png');
+        this.load.image('Spruce', 'Client/ContentIso/Spruce.png');
         this.load.image('Sand', 'Client/ContentIso/Sand.png');
         this.load.image('Ground', 'Client/ContentIso/sprGrass.png');
         this.load.spritesheet('Water', 'Client/ContentIso/Water.png', {
@@ -114,6 +116,7 @@ class PlayerScene extends Phaser.Scene {
       //  requstMapServer.CurrentMap.forEach((chunk =>this.drawTileChunk(chunk.Map, chunk.ChunkID) ))
         for (let i = 0; i<9;i++) {
             this.drawTileChunk(requstMapServer.CurrentMap[i].Map,  requstMapServer.CurrentMap[i].ChunkID)
+            this.drawTree(requstMapServer.CurrentMap[i].Tree, requstMapServer.CurrentMap[i].ChunkID )
         }
     }
     drawTileChunk(chunk, chunkID) {
@@ -136,6 +139,7 @@ for (let coordTile in chunk) {
     } else {
        tile = this.add.image(coordinate.x, coordinate.y,chunk[coordTile].key )
     }
+tile.setDepth(coordinate.y)
 tile.setInteractive()
     tile.on('clicked', (tile)=>{
         tile.alpha = 0.5
@@ -143,7 +147,7 @@ tile.setInteractive()
         let coord = this.isometricTocartesian(tile)
        this.targetPath[0] = coord.x
        this.targetPath[1] = coord.y
-        console.log(this.targetPath)
+        //console.log(this.targetPath)
     }, this)
    // tile.active = false
 
@@ -152,6 +156,29 @@ tile.setInteractive()
 
 }
     }
+    drawTree(chunk, chunkID) {
+        if (this.LoadChunksTree[chunkID] == true) {
+            return
+        }
+        this.LoadChunksTree[chunkID] = true
+        for (let coordTile in chunk) {
+            let tree
+            let coordinate = this.cartesianToIsometric(chunk[coordTile])
+             tree = this.add.image(coordinate.x, coordinate.y -64,chunk[coordTile].tree)
+            tree.setDepth(coordinate.y)
+            tree.setRotation(chunk[coordTile].age/5)
+
+            //console.log(coordTile, coordinate, "coordTREEE")
+
+            this.CurrentMap[chunkID].add(tree)
+            }
+
+
+// add tile in ChunkGroup
+
+
+        }
+
     //cartIso {x: xx y: yy}
     isometricTocartesian(cartIso) {
         let tempISO = new Phaser.Geom.Point((2*cartIso.y + cartIso.x)/2,(2*cartIso.y - cartIso.x)/2 )
@@ -263,25 +290,25 @@ tile.setInteractive()
 
     }
     getChunkID(x, y) {
-        let tileX = Math.fround(x/this.tileSize);
-        let tileY = Math.fround(y/this.tileSize);
+        let tileX = Math.fround(x/this.CHUNKIDSIZE);
+        let tileY = Math.fround(y/this.CHUNKIDSIZE);
         let chunkX = null;
         let chunkY = null;
         if (tileX<0)
         {
-            chunkX = Math.floor(tileX/this.tileSize)
+            chunkX = Math.floor(tileX/this.CHUNKIDSIZE)
         }
         else
         {
-            chunkX = Math.ceil(tileX/this.tileSize);
+            chunkX = Math.ceil(tileX/this.CHUNKIDSIZE);
         }
         if (tileY<0)
         {
-            chunkY = Math.floor(tileY/this.tileSize)
+            chunkY = Math.floor(tileY/this.CHUNKIDSIZE)
         }
         else
         {
-            chunkY = Math.ceil(tileY/this.tileSize);
+            chunkY = Math.ceil(tileY/this.CHUNKIDSIZE);
         }
         if (tileX===0)
         {
@@ -306,6 +333,7 @@ tile.setInteractive()
             if (chunkIsNotExist) {
                 let c = this.coordinate[i][0]+","+this.coordinate[i][1]
                 delete this.LoadChunks[c]
+                delete this.LoadChunksTree[c]
                 try {
                     this.CurrentMap[c].clear(true, true)
                     delete this.CurrentMap[c];

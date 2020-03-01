@@ -9,8 +9,8 @@ var SPECIES = [2]string{"Oak", "Spruce"}
 type Tree struct {
 	Species string  `json:"tree"` //Ель, береза и т.д
 	Age     float32 `json:"age"`  //Возраст дерева = 1.0 максимальный
-	X       int `json:"x"`
-	Y       int `json:"y"`
+	X       int     `json:"x"`
+	Y       int     `json:"y"`
 }
 
 func NewTree(coordinate Coordinate) Tree {

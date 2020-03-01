@@ -31,7 +31,9 @@ func (w *WorldMap) AddChunk(coordinate Chunk.Coordinate, chunk Chunk.Chunk) {
 	if isExist {
 		return
 	} else {
+		w.Lock()
 		w.Chunks[coordinate] = chunk
+		w.Unlock()
 	}
 
 }
@@ -98,7 +100,7 @@ func (w *WorldMap) GetPlayers() Players {
 func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
 	PX = PX
 	PY = PY
-	chunkId := GetChankID(PX, PY)
+	chunkId := GetChunkID(PX, PY)
 	w.Lock()
 	objChunk := w.Chunks[chunkId]
 	_, ok := objChunk.Tree[Chunk.Coordinate{X: PX, Y: PY}]

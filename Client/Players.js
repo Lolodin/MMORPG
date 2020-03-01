@@ -35,14 +35,16 @@ class Players extends Phaser.GameObjects.Sprite {
 
 
 
-                this.activePlayers[players[i].Name].setDepth(2)
+
                 this.activePlayers[players[i].Name].add(player)
                 this.activePlayers[players[i].Name].add(Text)
             } else if(this.activePlayers[players[i].Name] && players[i].Name !=  this.scene.ID.name) {
 
                 let coord =  this.scene.cartesianToIsometric(players[i])
+                this.activePlayers[players[i].Name].setDepth(coord.y)
                 this.activePlayers[players[i].Name].x =coord.x
                 this.activePlayers[players[i].Name].y =coord.y
+
             }
         }
     }

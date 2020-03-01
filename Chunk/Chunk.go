@@ -8,8 +8,9 @@ import (
 	"time"
 )
 
+var CHUNKIDSIZE = 32
 var TILE_SIZE = 32
-var CHANK_SIZE = 32 * 32
+var CHUNK_SIZE = 32 * 32
 var PERLIN_SEED float32 = 1700
 
 type Chunk struct {
@@ -23,8 +24,8 @@ type Chunk struct {
 */
 type Tile struct {
 	Key string `json:"key"`
-	X   int `json:"x"`
-	Y   int `json:"y"`
+	X   int    `json:"x"`
+	Y   int    `json:"y"`
 }
 
 /*
@@ -52,18 +53,18 @@ func NewChunk(idChunk Coordinate) Chunk {
 	var treeMap map[Coordinate]Tree
 	chunkMap = make(map[Coordinate]Tile)
 	treeMap = make(map[Coordinate]Tree)
-	chunkXMax = idChunk.X * CHANK_SIZE
-	chunkYMax = idChunk.Y * CHANK_SIZE
+	chunkXMax = idChunk.X * CHUNK_SIZE
+	chunkYMax = idChunk.Y * CHUNK_SIZE
 	var tree Tree
 
 	switch {
 	case chunkXMax < 0 && chunkYMax < 0:
 		{
-			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= TILE_SIZE {
-				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= TILE_SIZE {
+			for x := chunkXMax + CHUNK_SIZE; x > chunkXMax; x -= TILE_SIZE {
+				for y := chunkYMax + CHUNK_SIZE; y > chunkYMax; y -= TILE_SIZE {
 
-					posX := float32(x - (TILE_SIZE/2))
-					posY := float32(y + (TILE_SIZE/2))
+					posX := float32(x - (TILE_SIZE / 2))
+					posY := float32(y + (TILE_SIZE / 2))
 					tile := Tile{}
 
 					tile.X = int(posX)
@@ -94,10 +95,10 @@ func NewChunk(idChunk Coordinate) Chunk {
 		}
 	case chunkXMax < 0:
 		{
-			for x := chunkXMax + CHANK_SIZE; x > chunkXMax; x -= TILE_SIZE {
-				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += TILE_SIZE {
-					posX := float32(x - (TILE_SIZE/2))
-					posY := float32(y + (TILE_SIZE/2))
+			for x := chunkXMax + CHUNK_SIZE; x > chunkXMax; x -= TILE_SIZE {
+				for y := chunkYMax - CHUNK_SIZE; y < chunkYMax; y += TILE_SIZE {
+					posX := float32(x - (TILE_SIZE / 2))
+					posY := float32(y + (TILE_SIZE / 2))
 
 					tile := Tile{}
 
@@ -112,7 +113,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Ground"
 						rand.Seed(int64(time.Now().Nanosecond() + x - y))
 						randomTree := rand.Float32()
-						if randomTree > 0.90 {
+						if randomTree > 0.95 {
 							tree = NewTree(Coordinate{X: tile.X, Y: tile.Y})
 						}
 					case perlinValue > 0.5:
@@ -128,11 +129,11 @@ func NewChunk(idChunk Coordinate) Chunk {
 		}
 	case chunkYMax < 0:
 		{
-			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += TILE_SIZE {
-				for y := chunkYMax + CHANK_SIZE; y > chunkYMax; y -= TILE_SIZE {
+			for x := chunkXMax - CHUNK_SIZE; x < chunkXMax; x += TILE_SIZE {
+				for y := chunkYMax + CHUNK_SIZE; y > chunkYMax; y -= TILE_SIZE {
 
-					posX := float32(x + (TILE_SIZE/2))
-					posY := float32(y - (TILE_SIZE/2))
+					posX := float32(x + (TILE_SIZE / 2))
+					posY := float32(y - (TILE_SIZE / 2))
 					tile := Tile{}
 
 					tile.X = int(posX)
@@ -145,7 +146,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Ground"
 						rand.Seed(int64(time.Now().Nanosecond() + x - y))
 						randomTree := rand.Float32()
-						if randomTree > 0.90 {
+						if randomTree > 0.95 {
 							tree = NewTree(Coordinate{X: tile.X, Y: tile.Y})
 						}
 					case perlinValue > 0.5:
@@ -159,10 +160,10 @@ func NewChunk(idChunk Coordinate) Chunk {
 		}
 	default:
 		{
-			for x := chunkXMax - CHANK_SIZE; x < chunkXMax; x += TILE_SIZE {
-				for y := chunkYMax - CHANK_SIZE; y < chunkYMax; y += TILE_SIZE {
-					posX := float32(x + (TILE_SIZE/2))
-					posY := float32(y + (TILE_SIZE/2))
+			for x := chunkXMax - CHUNK_SIZE; x < chunkXMax; x += TILE_SIZE {
+				for y := chunkYMax - CHUNK_SIZE; y < chunkYMax; y += TILE_SIZE {
+					posX := float32(x + (TILE_SIZE / 2))
+					posY := float32(y + (TILE_SIZE / 2))
 					tile := Tile{}
 
 					tile.X = int(posX)
@@ -176,7 +177,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Ground"
 						rand.Seed(int64(time.Now().Nanosecond() + x - y))
 						randomTree := rand.Float32()
-						if randomTree > 0.90 {
+						if randomTree > 0.95 {
 							tree = NewTree(Coordinate{X: tile.X, Y: tile.Y})
 						}
 					case perlinValue > 0.5:

@@ -28,8 +28,8 @@ func main() {
 // Обработчик для index.html, здесь мы просто отдаем клиент пользователю
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("indexAction")
-	t, _ := template.ParseFiles("test.html")
-	err := t.Execute(w, "test")
+	t, _ := template.ParseFiles("index.html")
+	err := t.Execute(w, "index")
 	if err != nil {
 		fmt.Println(err.Error())
 	}

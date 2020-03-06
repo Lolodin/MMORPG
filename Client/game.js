@@ -1,4 +1,4 @@
-//import {MainScene} from "./mainScene.js";
+//import {TopDownClient} from "./TopDownClient.js";
 import {PlayerScene} from "./PlayerScene.js";
 import {GameMenu} from "./GameMenu.js";
 
@@ -10,6 +10,9 @@ let config = {
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: 1920   ,
         height: 1080
+    },
+    dom: {
+        createContainer: true
     },
     disableContextMenu: true,
     background: 'black',

@@ -1,7 +1,7 @@
 
-    export {MainScene}
+    export {TopDownClient}
 
-class MainScene extends Phaser.Scene{
+class TopDownClient extends Phaser.Scene{
     constructor() {
         super({key: "SceneMain"})
         this.GetServerMap()

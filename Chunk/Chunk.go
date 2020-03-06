@@ -112,7 +112,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 					switch {
 					case perlinValue < -0.12:
 						tile.Key = "Water"
-					case perlinValue >= -0.12 && perlinValue <= 0.5:
+					case perlinValue >= -0.12 && perlinValue < 0:
+						tile.Key = "Sand"
+					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
 						rand.Seed(int64(time.Now().Nanosecond() + x - y))
 						randomTree := rand.Float32()
@@ -147,7 +149,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 					switch {
 					case perlinValue < -0.12:
 						tile.Key = "Water"
-					case perlinValue >= -0.12 && perlinValue <= 0.5:
+					case perlinValue >= -0.12 && perlinValue < 0:
+						tile.Key = "Sand"
+					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
 						rand.Seed(int64(time.Now().Nanosecond() + x - y))
 						randomTree := rand.Float32()
@@ -180,7 +184,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 					switch {
 					case perlinValue < -0.12:
 						tile.Key = "Water"
-					case perlinValue >= -0.12 && perlinValue <= 0.5:
+					case perlinValue >= -0.12 && perlinValue < 0:
+						tile.Key = "Sand"
+					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
 						rand.Seed(int64(time.Now().Nanosecond() + x - y))
 						randomTree := rand.Float32()

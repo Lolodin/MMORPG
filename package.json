@@ -2,7 +2,7 @@
   "name": "gameserver",
   "version": "0.0.1",
   "description": "lib for client",
-  "main": "test.html",
+  "main": "index.html",
   "dependencies": {
     "phaser": "^3.21.0"
   },

@@ -7,10 +7,24 @@ import (
 	"math"
 )
 
+type personMap [9]Chunk.Chunk
+
+func (m *personMap) getTile(coordinate Chunk.Coordinate) (Chunk.Tile, error) {
+	chunkID := GetChunkID(coordinate.X, coordinate.Y)
+	for _, v:= range m{
+		if v.ChunkID == [2]int{chunkID.X, chunkID.Y} {
+			return v.Map[coordinate], nil
+		}
+	}
+	return Chunk.Tile{}, fmt.Errorf("Tile not Found")
+}
+
+
 type playerMap struct {
 	IDplayer int
 	Map      [9]Chunk.Chunk `json:"CurrentMap"`
 }
+
 
 /*
 Получаем ID чанка из координат(персонажа\объекта и т.д.)
@@ -112,8 +126,8 @@ func GetCurrentPlayerMap(currentChunkID Chunk.Coordinate) [9]Chunk.Coordinate {
 }
 
 //Получаем готовую карту из 9 чанков для отображения игроку
-func GetPlayerDrawChunkMap(currentMap [9]Chunk.Coordinate, W *WorldMap) [9]Chunk.Chunk {
-	var playerMap [9]Chunk.Chunk
+func GetPlayerDrawChunkMap(currentMap [9]Chunk.Coordinate, W *WorldMap) personMap {
+	var playerMap personMap
 	for i, m := range currentMap {
 		if W.isChunkExist(m) {
 			playerMap[i], _ = W.GetChunk(m)

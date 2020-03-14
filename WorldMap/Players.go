@@ -2,8 +2,8 @@ package WorldMap
 
 import (
 	"Test/Chunk"
+
 	"sync"
-	"time"
 )
 
 type Player struct {
@@ -21,10 +21,11 @@ type Players struct {
 	P []Player `json:"players"`
 }
 
+
 func NewPlayer(n, password string) *Player {
 	p := Player{}
-	p.X = 0
-	p.Y = 0
+	p.X = 16
+	p.Y = 16
 	p.Name = n
 	p.password = password
 	p.speed = 5
@@ -40,12 +41,12 @@ func (p *Player) isMove() bool {
 }
 
 //устанавливаем путь следования персонажа
-func (p *Player) SetWalkPath(x, y int) {
+func (p *Player) SetWalkPath(x, y int, m *WorldMap) {
 	if p.X != x && p.Y != y {
 		xy := Chunk.Coordinate{X: x, Y: y}
 		p.walkPath = xy
 		if !p.move {
-			go p.walk()
+			go p.walk(m)
 		}
 
 	} else {
@@ -81,30 +82,33 @@ func (p *Player) moveSwitch() {
 		p.move = true
 	}
 }
-func (p *Player) walk() {
-	p.mut.Lock()
-	p.move = true
-	p.mut.Unlock()
-	for p.move {
-		time.Sleep(25 * time.Millisecond)
-		if p.Y > p.walkPath.Y {
-			p.Y -= p.speed
-		}
-		if p.Y < p.walkPath.Y {
-			p.Y += p.speed
-		}
-		if p.X > p.walkPath.X {
-			p.X -= p.speed
-		}
-		if p.X < p.walkPath.X {
-			p.X += p.speed
-		}
-		if (p.X == p.walkPath.X && p.Y == p.walkPath.Y) || p.move == false {
-			p.mut.Lock()
-			p.move = false
-			p.mut.Unlock()
-			return
-		}
-	}
+func (p *Player) walk(m *WorldMap) {
+	//p.mut.Lock()
+	//p.move = true
+	//p.mut.Unlock()
+	//for p.move {
+	//	time.Sleep(25 * time.Millisecond)
+	//	if p.Y > p.walkPath.Y {
+	//		p.Y -= p.speed
+	//	}
+	//	if p.Y < p.walkPath.Y {
+	//		p.Y += p.speed
+	//	}
+	//	if p.X > p.walkPath.X {
+	//		p.X -= p.speed
+	//	}
+	//	if p.X < p.walkPath.X {
+	//		p.X += p.speed
+	//	}
+	//	if (p.X == p.walkPath.X && p.Y == p.walkPath.Y) || p.move == false {
+	//		p.mut.Lock()
+	//		p.move = false
+	//		p.mut.Unlock()
+	//		return
+	//	}
+
+	//path:=m.A(Chunk.Coordinate{p.X,p.Y}, p.walkPath)
+	//fmt.Println(path)
 
 }
+

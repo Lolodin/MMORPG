@@ -102,10 +102,11 @@ func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
 	PY = PY
 	chunkId := GetChunkID(PX, PY)
 	w.Lock()
-	objChunk := w.Chunks[chunkId]
-	_, ok := objChunk.Tree[Chunk.Coordinate{X: PX, Y: PY}]
-	w.Unlock()
-	return ok
+	defer w.Unlock()
+	return w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Busy
+
+
+
 }
 
 //Получить player

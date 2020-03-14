@@ -49,13 +49,13 @@ func getRandomVector(x, y float32) []float32 {
 	switch v {
 
 	case 0:
-		return []float32{-1, 0}
+		return []float32{0, 1}
 	case 1:
 		return []float32{1, 0}
 	case 2:
-		return []float32{0, 1}
-	default:
 		return []float32{0, -1}
+	default:
+		return []float32{-1, 0}
 
 	}
 }
@@ -66,7 +66,7 @@ func dot(a []float32, b []float32) float32 {
 func lerp(a, b, c float32) float32 {
 
 	return a*(1-c) + b*c
-
+	//return a*a*a*a*(0.5 * c) + b*c
 }
 func curve(t float32) float32 {
 

@@ -8,11 +8,11 @@ import (
 	"time"
 )
 
-var CHUNKIDSIZE = 32
-var TILE_SIZE = 32
-var CHUNK_SIZE = 32 * 32
-var PERLIN_SEED float32 = 1700
-
+const CHUNKIDSIZE = 32
+const TILE_SIZE = 32
+const CHUNK_SIZE = 32 * 32
+const PERLIN_SEED float32 = 2300
+// Чанк который хранит тайтлы и другие игровые объекты
 type Chunk struct {
 	ChunkID [2]int
 	Map     map[Coordinate]Tile
@@ -26,6 +26,7 @@ type Tile struct {
 	Key string `json:"key"`
 	X   int    `json:"x"`
 	Y   int    `json:"y"`
+	Busy bool
 }
 
 /*
@@ -87,11 +88,12 @@ func NewChunk(idChunk Coordinate) Chunk {
 					case perlinValue > 0.5:
 						tile.Key = "Mount"
 					}
-					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
+
 					if tree.Species != "" {
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+						tile.Busy = true
 					}
-
+					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
 			}
@@ -110,9 +112,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 					switch {
-					case perlinValue < -0.12:
+					case perlinValue < -0.012:
 						tile.Key = "Water"
-					case perlinValue >= -0.12 && perlinValue < 0:
+					case perlinValue >= -0.012 && perlinValue < 0:
 						tile.Key = "Sand"
 					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
@@ -125,11 +127,11 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Mount"
 					}
 
-					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
-
 					if tree.Species != "" {
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+						tile.Busy = true
 					}
+					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
 			}
@@ -147,9 +149,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 					tile.Y = int(posY)
 					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 					switch {
-					case perlinValue < -0.12:
+					case perlinValue < -0.012:
 						tile.Key = "Water"
-					case perlinValue >= -0.12 && perlinValue < 0:
+					case perlinValue >= -0.012 && perlinValue < 0:
 						tile.Key = "Sand"
 					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
@@ -182,9 +184,9 @@ func NewChunk(idChunk Coordinate) Chunk {
 					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 
 					switch {
-					case perlinValue < -0.12:
+					case perlinValue < -0.012:
 						tile.Key = "Water"
-					case perlinValue >= -0.12 && perlinValue < 0:
+					case perlinValue >= -0.012 && perlinValue < 0:
 						tile.Key = "Sand"
 					case perlinValue >= 0 && perlinValue <= 0.5:
 						tile.Key = "Ground"
@@ -196,10 +198,11 @@ func NewChunk(idChunk Coordinate) Chunk {
 					case perlinValue > 0.5:
 						tile.Key = "Mount"
 					}
-					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 					if tree.Species != "" {
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+						tile.Busy = true
 					}
+					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
 			}

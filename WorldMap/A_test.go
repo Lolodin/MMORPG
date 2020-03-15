@@ -8,20 +8,27 @@ import (
 
 func TestQueue(t *testing.T) {
 	var queue queue = &Node{}
-	for i := 0; i < 2; i++ {
-		queue.addInQueue(Node{Data: Chunk.Coordinate{i, i + 1}})
+	for i := 0; i < 5; i++ {
+		queue.addInQueue(Chunk.Coordinate{i, i + 1})
 	}
-	fmt.Println(queue.getData())
-	fmt.Println(queue.getData())
-	fmt.Println(queue.getData())
+	i:=0
+	for i<10 {
+		i++
+		s, e:= queue.getData()
+		if e!=nil {
+			fmt.Println(e.Error())
+			break
+		}
+		fmt.Println(s)
+	}
 }
 func TestStack(t *testing.T)  {
-	var stack stack = &Node{}
-	for i := 0; i < 2; i++ {
-		stack.addInStack(Node{Data: Chunk.Coordinate{i, i + 1}})
+	var stack stack = &Node{Chunk.Coordinate{1,1}, nil}
+	for i := 0; i < 5; i++ {
+		stack.addInStack(Chunk.Coordinate{i, i + 1})
 	}
 i:=0
-for i<3 {
+for i<10 {
 	i++
 	s, e:= stack.getDataS()
 	if e!=nil {

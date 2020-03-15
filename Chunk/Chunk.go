@@ -166,6 +166,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 					if tree.Species != "" {
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
+						tile.Busy = true
 					}
 
 				}

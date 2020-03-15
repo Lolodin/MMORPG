@@ -68,7 +68,7 @@ func PlayerHandler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 			W.Player[player.Name].SetWalkPath(player.X, player.Y, W)
 			pls := W.GetPlayers()
 			websocket.JSON.Send(ws, pls)
-			fmt.Println("Ping", player.Name, player.X, player.Y)
+			//fmt.Println("Ping", player.Name, player.X, player.Y)
 
 		}
 

@@ -2,8 +2,9 @@ package WorldMap
 
 import (
 	"Test/Chunk"
-
+	"fmt"
 	"sync"
+	"time"
 )
 
 type Player struct {
@@ -106,9 +107,28 @@ func (p *Player) walk(m *WorldMap) {
 	//		p.mut.Unlock()
 	//		return
 	//	}
-
-	//path:=m.A(Chunk.Coordinate{p.X,p.Y}, p.walkPath)
-	//fmt.Println(path)
+	p.mut.Lock()
+	p.move = true
+	p.mut.Unlock()
+	path:=m.A(Chunk.Coordinate{p.X,p.Y}, p.walkPath)
+	fmt.Println(path)
+	i := true
+	for i {
+		fmt.Println("Move")
+		time.Sleep(1 * time.Second)
+		e, err := path.getData()
+		if err!=nil{
+			fmt.Println(err.Error())
+			break
+		}
+		p.X = e.X
+		p.Y = e.Y
+		fmt.Println(e)
+	}
+	p.mut.Lock()
+	p.move = false
+	p.mut.Unlock()
+	return
 
 }
 

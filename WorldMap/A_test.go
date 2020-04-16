@@ -21,6 +21,9 @@ func TestQueue(t *testing.T) {
 		}
 		fmt.Println(s)
 	}
+	m:= make(map[string]bool)
+	m["lol1"] = true
+	fmt.Println(m["lol2"])
 }
 func TestStack(t *testing.T)  {
 	var stack stack = &Node{Chunk.Coordinate{1,1}, nil}

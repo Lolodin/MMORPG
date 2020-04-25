@@ -2,7 +2,7 @@ package Chunk
 
 import (
 	"Test/PerlinNoise"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"math/rand"
 	"strconv"
 	"time"
@@ -47,7 +47,13 @@ func (t Coordinate) MarshalText() ([]byte, error) {
 Например [1,1]
 */
 func NewChunk(idChunk Coordinate) Chunk {
-	fmt.Println("New Chank", idChunk)
+
+	log.WithFields(log.Fields{
+		"package": "Chunk",
+		"func" : "NewChunk",
+		"idChunk": idChunk,
+
+	}).Info("Create new Chunck")
 	chunk := Chunk{ChunkID: [2]int{idChunk.X, idChunk.Y}}
 	var chunkXMax, chunkYMax int
 	var chunkMap map[Coordinate]Tile
@@ -213,7 +219,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 	chunk.Map = chunkMap
 	chunk.Tree = treeMap
-	fmt.Println(treeMap)
+
 
 	return chunk
 }

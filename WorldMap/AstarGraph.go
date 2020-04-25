@@ -2,14 +2,31 @@ package WorldMap
 
 import "Test/Chunk"
 
-type Grathpath map[Chunk.Coordinate][]Chunk.Coordinate
-func createGrath(worldMap *WorldMap,person Chunk.Coordinate, target Chunk.Coordinate ) {
+type Graphpath map[Chunk.Coordinate][]Chunk.Coordinate
+
+// сделать возврат ошибки
+func createGraph(worldMap *WorldMap,person Chunk.Coordinate, target Chunk.Coordinate ) Graphpath {
 	chunk:= GetChunkID(person.X, person.Y)
+	var stack  stack  = &Node{}
+	stack.addInStack(person)
 	thisMap := GetCurrentPlayerMap(chunk)
 	m:=GetPlayerDrawChunkMap(thisMap, worldMap)
 	find := false
+	graph := Graphpath{}
 
 	for find {
+		currentCoord, e := stack.getDataS()
+		if currentCoord == target{
+			return graph
+		}
+		// возврат ошибки
+		if e != nil {
+			return graph
+		}
+		coords:= getAllCoordinate(currentCoord, &m)
+		graph.addEdge(currentCoord, coords)
+		stack = addCoordToStack(stack, coords, &m)
+		
 
 
 
@@ -19,9 +36,11 @@ func createGrath(worldMap *WorldMap,person Chunk.Coordinate, target Chunk.Coordi
 
 
 	}
-
+return graph
 }
-func getAllCoordinate(person Chunk.Coordinate) [8]Chunk.Coordinate {
+
+// переделать под переход только на свободные тайлы
+func getAllCoordinate(person Chunk.Coordinate,  m *personMap) []Chunk.Coordinate {
 	var coord [8]Chunk.Coordinate
 
 	coord[0].X = person.X+32
@@ -47,13 +66,37 @@ func getAllCoordinate(person Chunk.Coordinate) [8]Chunk.Coordinate {
 
 	coord[7].X = person.X
 	coord[7].Y = person.Y+32
-	return coord
+var noBysyTile []Chunk.Coordinate
+	for _, v := range coord {
+		 t, e :=m.getTile(v)
+		 if e != nil {
+			 continue
+		 }
+		 if !t.Busy {
+			noBysyTile = append(noBysyTile, v)
+		 }
+	}
+return noBysyTile
 }
-func addEdge(person Chunk.Coordinate, target Chunk.Coordinate, grathpath *Grathpath) {
 
-}
 
-func (g Grathpath) checkEdge(coord Chunk.Coordinate) bool  {
+func (g Graphpath) checkEdge(coord Chunk.Coordinate) bool  {
 _, ok := g[coord]
 return ok
+}
+func (g Graphpath) addEdge(coordParent Chunk.Coordinate, coords []Chunk.Coordinate)   {
+for _, v := range coords {
+	if g.checkEdge(v) {
+		continue
+	} else {
+		g[coordParent]=append(g[coordParent], v)
+	}
+}
+}
+func addCoordToStack( s stack, coords  []Chunk.Coordinate, m *personMap) stack {
+	for _, v := range coords{
+		s.addInStack(v)
+
+	}
+	return s
 }

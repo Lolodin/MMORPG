@@ -7,10 +7,22 @@ import (
 	"golang.org/x/net/websocket"
 	"html/template"
 	"net/http"
+	log "github.com/sirupsen/logrus"
+	"os"
 )
+func init(){
 
+filelog, e:= os.Create("log")
+if e != nil {
+	panic("error create log file")
+}
+log.SetOutput(filelog)
+}
 func main() {
-	fmt.Println("start")
+	log.WithFields(log.Fields{
+		"package": "main",
+		"func" : "main",
+	}).Info("Server start")
 	World := WorldMap.NewCacheWorldMap()
 	http.HandleFunc("/init", GameController.InitHandler(&World))
 	http.HandleFunc("/map", GameController.Map_Handler(&World))
@@ -21,7 +33,11 @@ func main() {
 	http.Handle("/Client/content/", http.StripPrefix("/Client/content/", http.FileServer(http.Dir("./Client/content/"))))
 	err := http.ListenAndServe("localhost:8080", nil)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.WithFields(log.Fields{
+			"package": "main",
+			"func" : "main",
+			"error": err,
+		}).Fatal("Error start server")
 	}
 
 }
@@ -31,6 +47,10 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("index.html")
 	err := t.Execute(w, "index")
 	if err != nil {
-		fmt.Println(err.Error())
+		log.WithFields(log.Fields{
+			"package": "main",
+			"func" : "indexHandler",
+			"error": err,
+		}).Error("Error get index.html")
 	}
 }

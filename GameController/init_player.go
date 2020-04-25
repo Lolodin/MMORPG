@@ -3,9 +3,9 @@ package GameController
 import (
 	"Test/WorldMap"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	log "github.com/sirupsen/logrus"
 )
 
 type requestPlayer struct {
@@ -22,12 +22,17 @@ type responsePlayer struct {
 // Точка входа в игры, юзер отправляет нам свои данные, мы отдаем данные персонажа, уникальный ид или name через которое будет совершенно socket подключение
 func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Init")
+
 		body, _ := ioutil.ReadAll(r.Body)
 		rp := requestPlayer{}
 		err := json.Unmarshal(body, &rp)
 		if err != nil {
-			fmt.Println("Error Marshaler")
+			log.WithFields(log.Fields{
+				"package": "GameController",
+				"func" : "InitHandler",
+				"error": err,
+				"data" : body,
+			}).Error("Error get player data")
 		}
 		w.Header().Set("Content-Type", "application/json")
 		p, exile := W.GetPlayer(rp.Name)
@@ -37,7 +42,12 @@ func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 				resPl := responsePlayer{Error: "null", X: p.X, Y: p.Y, Name: p.Name}
 				res, err := json.Marshal(resPl)
 				if err != nil {
-					fmt.Println(err.Error())
+					log.WithFields(log.Fields{
+						"package": "GameController",
+						"func" : "InitHandler",
+						"error": err,
+						"data" : resPl,
+					}).Error("Error Marshal player data")
 					w.Write([]byte("{Error: error server}"))
 					return
 				}
@@ -50,7 +60,12 @@ func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 			resPl := responsePlayer{Error: "null", X: p.X, Y: p.Y, Name: p.Name}
 			res, err := json.Marshal(resPl)
 			if err != nil {
-				fmt.Println(err.Error())
+				log.WithFields(log.Fields{
+					"package": "GameController",
+					"func" : "InitHandler",
+					"error": err,
+					"data" : resPl,
+				}).Error("Error Marshal player data")
 				w.Write([]byte("{Error: error server}"))
 				return
 			}

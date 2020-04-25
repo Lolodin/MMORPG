@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/websocket"
 	"io/ioutil"
 	"net/http"
+	log "github.com/sirupsen/logrus"
 )
 
 type requestMap struct {
@@ -29,7 +30,12 @@ func Map_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 
 		err := json.Unmarshal(body, &rm)
 		if err != nil {
-			fmt.Println("Error Marshaler")
+			log.WithFields(log.Fields{
+				"package": "GameController",
+				"func" : "InitHandler",
+				"error": err,
+				"data" : body,
+			}).Error("Error Marshal data")
 		}
 		fmt.Println(rm.X, rm.Y)
 
@@ -48,27 +54,41 @@ func PlayerHandler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 	return func(ws *websocket.Conn) {
 		defer func() {
 			if err := recover(); err != nil {
-				fmt.Println("Close Conn")
+				log.WithFields(log.Fields{
+					"package": "GameController",
+					"func" : "PlayerHandler",
+					"error": err,
+				}).Error("Error ws")
 			}
 
 		}()
 
 		player := pingPlayer{}
 		websocket.JSON.Receive(ws, &player)
-		fmt.Println(player)
+
 
 		//Game Loop
-		fmt.Println("Connect Player", player.Name)
+		log.WithFields(log.Fields{
+			"package": "GameController",
+			"func" : "PlayerHandler",
+			"player": player,
+		}).Info("Connect player")
 		for {
 			err := websocket.JSON.Receive(ws, &player)
 			if err != nil {
-				err.Error()
+				log.WithFields(log.Fields{
+					"package": "GameController",
+					"func" : "PlayerHandler",
+					"error": err,
+				}).Error("Connect cancel")
 				return
 			}
 			W.Player[player.Name].SetWalkPath(player.X, player.Y, W)
 			pls := W.GetPlayers()
 			websocket.JSON.Send(ws, pls)
-			//fmt.Println("Ping", player.Name, player.X, player.Y)
+			log.WithFields(log.Fields{
+				"Player" : player,
+			}).Info("Player log")
 
 		}
 

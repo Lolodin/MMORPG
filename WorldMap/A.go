@@ -3,6 +3,7 @@ package WorldMap
 import (
 	"Test/Chunk"
 	"fmt"
+
 )
 
 type queue interface {
@@ -65,4 +66,6 @@ func (n *Node) getDataS() (Chunk.Coordinate, error) {
  			return data, nil
 }
 //Функция поиска пути, возвращает Очередь из координат по которой пойдет персонаж
-
+//func Astar() queue {
+//
+//}

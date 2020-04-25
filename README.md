@@ -31,4 +31,5 @@ https://habr.com/ru/post/488752/
 ```$ go run main.go```
 
 Переходи в браузере по адресу localhost:8080
+
 Первый прототип на чистом жс: https://lolodin.github.io/My2DGame/

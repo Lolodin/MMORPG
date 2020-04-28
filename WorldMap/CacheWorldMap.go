@@ -4,6 +4,7 @@ import (
 	"Test/Chunk"
 	"fmt"
 	"sync"
+	log "github.com/sirupsen/logrus"
 )
 
 type WorldMap struct {
@@ -33,6 +34,11 @@ func (w *WorldMap) AddChunk(coordinate Chunk.Coordinate, chunk Chunk.Chunk) {
 	} else {
 		w.Lock()
 		w.Chunks[coordinate] = chunk
+		log.WithFields(log.Fields{
+			"package": "WorldMap",
+			"func" : "AddChunk",
+			"Chunk": chunk,
+		}).Info("Create new Chunk")
 		w.Unlock()
 	}
 

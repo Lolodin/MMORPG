@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	log "github.com/sirupsen/logrus"
 )
 
 type personMap [9]Chunk.Chunk
@@ -125,7 +126,7 @@ func GetCurrentPlayerMap(currentChunkID Chunk.Coordinate) [9]Chunk.Coordinate {
 	return CurrentMap
 }
 
-//Получаем готовую карту из 9 чанков для отображения игроку
+//Получаем готовую карту из 9 чанков для отображения
 func GetPlayerDrawChunkMap(currentMap [9]Chunk.Coordinate, W *WorldMap) personMap {
 	var playerMap personMap
 	for i, m := range currentMap {
@@ -148,7 +149,13 @@ func MapToJSON(m [9]Chunk.Chunk, id int) []byte {
 	}
 	r, e := json.Marshal(a)
 	if e != nil {
-		fmt.Println("error", e)
+		log.WithFields(log.Fields{
+			"package": "worldMap",
+			"func" : "Map to Json",
+			"error": e,
+			"map" : a.Map,
+			"player" : a.IDplayer,
+		}).Warning("Error Marshal player map")
 		return nil
 	}
 	return r

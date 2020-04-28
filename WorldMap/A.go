@@ -66,6 +66,10 @@ func (n *Node) getDataS() (Chunk.Coordinate, error) {
  			return data, nil
 }
 //Функция поиска пути, возвращает Очередь из координат по которой пойдет персонаж
-//func Astar() queue {
-//
-//}
+func Astar(graphpath Graphpath, person Chunk.Coordinate, target Chunk.Coordinate) queue {
+var q queue = &Node{}
+q.addInQueue(person)
+
+var coord Chunk.Coordinate
+coord = person
+}

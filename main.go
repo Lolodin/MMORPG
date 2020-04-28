@@ -3,11 +3,10 @@ package main
 import (
 	"Test/GameController"
 	"Test/WorldMap"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 	"html/template"
 	"net/http"
-	log "github.com/sirupsen/logrus"
 	"os"
 )
 func init(){
@@ -43,7 +42,6 @@ func main() {
 }
 // Обработчик для index.html, здесь мы просто отдаем клиент пользователю
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("indexAction")
 	t, _ := template.ParseFiles("index.html")
 	err := t.Execute(w, "index")
 	if err != nil {

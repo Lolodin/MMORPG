@@ -1,6 +1,9 @@
 package WorldMap
 
-import "Test/Chunk"
+import (
+	"Test/Chunk"
+	"fmt"
+)
 
 type Graphpath map[Chunk.Coordinate][]Chunk.Coordinate
 
@@ -11,21 +14,25 @@ func createGraph(worldMap *WorldMap,person Chunk.Coordinate, target Chunk.Coordi
 	stack.addInStack(person)
 	thisMap := GetCurrentPlayerMap(chunk)
 	m:=GetPlayerDrawChunkMap(thisMap, worldMap)
-	find := false
+	find := true
 	graph := Graphpath{}
 
 	for find {
+
 		currentCoord, e := stack.getDataS()
-		if currentCoord == target{
-			return graph
-		}
+
+		//if currentCoord == target{
+		//	fmt.Println("FIND!", currentCoord)
+		//	return graph
+		//}
 		// возврат ошибки
 		if e != nil {
+			fmt.Println("Stack empty", currentCoord)
 			return graph
 		}
 		coords:= getAllCoordinate(currentCoord, &m)
 		graph.addEdge(currentCoord, coords)
-		stack = addCoordToStack(stack, coords, &m)
+		stack = addCoordToStack(stack, coords, &m, graph)
 		
 
 
@@ -93,9 +100,12 @@ for _, v := range coords {
 	}
 }
 }
-func addCoordToStack( s stack, coords  []Chunk.Coordinate, m *personMap) stack {
+func addCoordToStack( s stack, coords  []Chunk.Coordinate, m *personMap, graphpath Graphpath) stack {
 	for _, v := range coords{
-		s.addInStack(v)
+		if !graphpath.checkEdge(v) {
+			s.addInStack(v)
+		}
+
 
 	}
 	return s

@@ -2,7 +2,9 @@ package WorldMap
 
 import (
 	"Test/Chunk"
+	"fmt"
 	"sync"
+	"time"
 )
 
 type Player struct {
@@ -107,27 +109,29 @@ func (p *Player) walk(m *WorldMap) {
 	//	}
 
 	//__________________________________________________________
-	//p.mut.Lock()
-	//p.move = true
-	//p.mut.Unlock()
-	//path:=m.A(Chunk.Coordinate{p.X,p.Y}, p.walkPath)
-	//fmt.Println(path)
-	//i := true
-	//for i {
-	//	fmt.Println("Move")
-	//	time.Sleep(1 * time.Second)
-	//	e, err := path.getData()
-	//	if err!=nil{
-	//		fmt.Println(err.Error())
-	//		break
-	//	}
-	//	p.X = e.X
-	//	p.Y = e.Y
-	//	fmt.Println(e)
-	//}
-	//p.mut.Lock()
-	//p.move = false
-	//p.mut.Unlock()
+	p.mut.Lock()
+	p.move = true
+	p.mut.Unlock()
+	graph := createGraph(m, Chunk.Coordinate{p.X,p.Y}, p.walkPath )
+	path:=Astar(graph,Chunk.Coordinate{p.X,p.Y}, p.walkPath)
+	var s stack = &Node{}
+	q:= createStackpath(path, s, p.walkPath)
+	i := true
+	for i {
+		fmt.Println("Move")
+		time.Sleep(1 * time.Second)
+		e, err := q.getDataS()
+		if err!=nil{
+			fmt.Println(err.Error())
+			break
+		}
+		p.X = e.X
+		p.Y = e.Y
+		fmt.Println(e)
+	}
+	p.mut.Lock()
+	p.move = false
+	p.mut.Unlock()
 	return
 
 }

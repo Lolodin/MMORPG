@@ -41,3 +41,29 @@ for i<10 {
 	fmt.Println(s)
 }
 }
+func TestAstar(t *testing.T) {
+	World := NewCacheWorldMap()
+	person:= Chunk.Coordinate{16,16}
+	target:=Chunk.Coordinate{48 , -16-32-32-32}
+	c := GetChunkID(person.X, person.Y)
+	d := GetCurrentPlayerMap(c)
+	_ = GetPlayerDrawChunkMap(d, &World)
+	a:=World.CheckBusyTile(target.X, target.Y)
+	fmt.Println(target)
+	if a {
+		panic("Chunk is Busy")
+	}
+	g:=createGraph(&World, person, target)
+	fmt.Println("exist?", g[target])
+	fmt.Println(g)
+	q:=Astar(g, person, target)
+	var s stack = &Node{}
+	s = createStackpath(q,s, person)
+	fmt.Println(q)
+	fmt.Println("start stack")
+	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
+
+
+}

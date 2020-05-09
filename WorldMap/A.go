@@ -16,11 +16,26 @@ type stack interface {
 	addInStack(coor Chunk.Coordinate)
 	getDataS() (Chunk.Coordinate, error)
 }
+type list interface {
+	addNextNode(node *Node)
+
+}
+
 
 type Node struct {
 	Data Chunk.Coordinate
 	NextNode *Node
 }
+func (n *Node) addNextNode(n2 Node) {
+	if n.checkChild() {
+		n.NextNode.addNextNode(n2)
+	} else {
+		n.NextNode = &n2
+	}
+}
+
+
+
 // Добавляем элемент в очередь
 func (n *Node) addInQueue(coor Chunk.Coordinate) {
 	n2:= Node{Data:coor}
@@ -66,10 +81,70 @@ func (n *Node) getDataS() (Chunk.Coordinate, error) {
  			return data, nil
 }
 //Функция поиска пути, возвращает Очередь из координат по которой пойдет персонаж
-func Astar(graphpath Graphpath, person Chunk.Coordinate, target Chunk.Coordinate) queue {
-var q queue = &Node{}
-q.addInQueue(person)
-
+func Astar(graphpath Graphpath, person Chunk.Coordinate, target Chunk.Coordinate) Node {
+var q stack = &Node{}
+q.addInStack(person)
 var coord Chunk.Coordinate
-coord = person
+
+visited:= make(map[Chunk.Coordinate]bool)
+path:= make(map[Chunk.Coordinate]Node)
+for coord!= target {
+
+
+coord, e := q.getDataS()
+	fmt.Println(coord,"newLOOP")
+	if visited[coord] {
+		fmt.Println("Visited")
+		a, e := q.getDataS()
+		coord = a
+		if e!= nil {
+			panic("error get chunk")
+		}
+		continue
+	}
+if e!= nil {
+	panic("error get chunk")
+}
+n1:= &Node{}
+n1.Data = coord
+path[coord] = *n1
+
+visited[coord] = true
+g := graphpath[coord]
+fmt.Println(g)
+for _, v := range g {
+
+	if visited[v] {
+		continue
+	}
+	q.addInStack(v)
+n1 = &Node{}
+n1.Data = v
+n1.addNextNode(path[coord])
+path[v] = *n1
+
+}
+coord, e = q.getDataS()
+	if coord == target {
+		return  path[coord]
+	}
+}
+return path[coord]
+
+
+
+
+}
+// return nil if stack empty
+func createStackpath(node Node, s stack, target Chunk.Coordinate) stack {
+	if node.NextNode !=nil {
+		s.addInStack(node.Data)
+		createStackpath(*node.NextNode, s, target)
+	} else {
+		s.addInStack(node.Data)
+		s.addInStack(target)
+		return s
+	}
+	return s
+
 }

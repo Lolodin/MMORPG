@@ -58,7 +58,8 @@ func TestAstar(t *testing.T) {
 	fmt.Println(g)
 	q:=Astar(g, person, target)
 	q.printChild()
-	var s stack = &Node{}
+	var s stack = &Node{Data:person}
+
 	s = createStackpath(q,s, person)
 	fmt.Println(q)
 	fmt.Println("start stack")
@@ -68,6 +69,11 @@ func TestAstar(t *testing.T) {
 	fmt.Println(s.getDataS())
 	fmt.Println(s.getDataS())
 	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
+
 
 
 }

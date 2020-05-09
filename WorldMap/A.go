@@ -144,16 +144,14 @@ return path[target]
 
 }
 // return nil if stack empty
-func createStackpath(node Node, s stack, target Chunk.Coordinate) stack {
+func createStackpath(node Node, s stack, p Chunk.Coordinate) stack {
 	if node.NextNode !=nil {
 		fmt.Println(s, "+stack")
 		s.addInStack(node.Data)
-		createStackpath(*node.NextNode, s, target)
+		createStackpath(*node.NextNode, s, p)
 	} else {
-		fmt.Println(s, "+stack")
-		s.addInStack(node.Data)
-		s.addInStack(target)
-		return s
+		s.addInStack(p)
+
 	}
 	return s
 

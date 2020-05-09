@@ -130,17 +130,25 @@ func (p *Player) walk(m *WorldMap) {
 	var s stack = &Node{}
 	q:= createStackpath(path, s, p.walkPath)
 	i := true
+	_, err := q.getDataS()
+	if err!=nil{
+		fmt.Println(err.Error())
+
+	}
 	for i {
-		fmt.Println("Move")
+
 		time.Sleep(1 * time.Second)
 		e, err := q.getDataS()
 		if err!=nil{
 			fmt.Println(err.Error())
 			break
 		}
+
+
 		p.X = e.X
 		p.Y = e.Y
-		fmt.Println(e)
+		fmt.Println(p.X, p.Y, "WARNING!")
+
 	}
 	p.mut.Lock()
 	p.move = false

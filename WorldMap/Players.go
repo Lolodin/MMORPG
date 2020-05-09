@@ -3,6 +3,7 @@ package WorldMap
 import (
 	"Test/Chunk"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
 )
@@ -109,6 +110,18 @@ func (p *Player) walk(m *WorldMap) {
 	//	}
 
 	//__________________________________________________________
+	a:=m.CheckBusyTile(p.walkPath.X, p.walkPath.Y)
+	if a {
+		log.WithFields(log.Fields{
+			"package": "WorldMap",
+			"func" : "walk",
+			"BusyTile": a,
+			"Person" : Chunk.Coordinate{p.X, p.Y},
+			"target" : p.walkPath,
+
+		}).Info("N")
+		return
+	}
 	p.mut.Lock()
 	p.move = true
 	p.mut.Unlock()

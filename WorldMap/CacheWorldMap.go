@@ -104,12 +104,12 @@ func (w *WorldMap) GetPlayers() Players {
 
 // return true if Tree busy tile
 func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
-	PX = PX
-	PY = PY
 	chunkId := GetChunkID(PX, PY)
 	w.Lock()
 	defer w.Unlock()
-	return w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Busy
+	b:= w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Busy
+	c:= w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Key
+	return b && c == "Water"
 
 
 

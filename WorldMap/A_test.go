@@ -44,7 +44,7 @@ for i<10 {
 func TestAstar(t *testing.T) {
 	World := NewCacheWorldMap()
 	person:= Chunk.Coordinate{16,16}
-	target:=Chunk.Coordinate{48 , -16-32-32-32}
+	target:=Chunk.Coordinate{304 , 240}
 	c := GetChunkID(person.X, person.Y)
 	d := GetCurrentPlayerMap(c)
 	_ = GetPlayerDrawChunkMap(d, &World)
@@ -57,10 +57,14 @@ func TestAstar(t *testing.T) {
 	fmt.Println("exist?", g[target])
 	fmt.Println(g)
 	q:=Astar(g, person, target)
+	q.printChild()
 	var s stack = &Node{}
 	s = createStackpath(q,s, person)
 	fmt.Println(q)
 	fmt.Println("start stack")
+	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
+	fmt.Println(s.getDataS())
 	fmt.Println(s.getDataS())
 	fmt.Println(s.getDataS())
 	fmt.Println(s.getDataS())

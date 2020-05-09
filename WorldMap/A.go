@@ -80,23 +80,33 @@ func (n *Node) getDataS() (Chunk.Coordinate, error) {
  			n.Data= node.Data
  			return data, nil
 }
+func (n *Node) printChild() {
+	fmt.Println(n.Data, "print child")
+	if n.NextNode!=nil {
+		n.NextNode.printChild()
+	}
+}
 //Функция поиска пути, возвращает Очередь из координат по которой пойдет персонаж
 func Astar(graphpath Graphpath, person Chunk.Coordinate, target Chunk.Coordinate) Node {
-var q stack = &Node{}
-q.addInStack(person)
+var q queue = &Node{}
+q.addInQueue(person)
 var coord Chunk.Coordinate
 
 visited:= make(map[Chunk.Coordinate]bool)
 path:= make(map[Chunk.Coordinate]Node)
+	n1:= &Node{}
+	n1.Data = coord
+	path[person] = *n1
 for coord!= target {
 
 
-coord, e := q.getDataS()
+coord, e := q.getData()
+	if coord == target {
+		return  path[coord]
+	}
 	fmt.Println(coord,"newLOOP")
 	if visited[coord] {
 		fmt.Println("Visited")
-		a, e := q.getDataS()
-		coord = a
 		if e!= nil {
 			panic("error get chunk")
 		}
@@ -105,31 +115,29 @@ coord, e := q.getDataS()
 if e!= nil {
 	panic("error get chunk")
 }
-n1:= &Node{}
-n1.Data = coord
-path[coord] = *n1
+
 
 visited[coord] = true
 g := graphpath[coord]
 fmt.Println(g)
 for _, v := range g {
-
-	if visited[v] {
+	_, ok:=path[v]
+	if visited[v] || ok {
 		continue
 	}
-	q.addInStack(v)
-n1 = &Node{}
-n1.Data = v
-n1.addNextNode(path[coord])
-path[v] = *n1
-
-}
-coord, e = q.getDataS()
-	if coord == target {
-		return  path[coord]
+q.addInQueue(v)
+n2 := &Node{}
+n2.Data = v
+n2.addNextNode(path[coord])
+path[v] = *n2
+	if v == target {
+		return  path[v]
 	}
 }
-return path[coord]
+
+
+}
+return path[target]
 
 
 
@@ -138,9 +146,11 @@ return path[coord]
 // return nil if stack empty
 func createStackpath(node Node, s stack, target Chunk.Coordinate) stack {
 	if node.NextNode !=nil {
+		fmt.Println(s, "+stack")
 		s.addInStack(node.Data)
 		createStackpath(*node.NextNode, s, target)
 	} else {
+		fmt.Println(s, "+stack")
 		s.addInStack(node.Data)
 		s.addInStack(target)
 		return s

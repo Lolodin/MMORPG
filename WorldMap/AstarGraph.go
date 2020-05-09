@@ -10,17 +10,18 @@ type Graphpath map[Chunk.Coordinate][]Chunk.Coordinate
 // сделать возврат ошибки
 func createGraph(worldMap *WorldMap,person Chunk.Coordinate, target Chunk.Coordinate ) Graphpath {
 	chunk:= GetChunkID(person.X, person.Y)
-	var stack  stack  = &Node{}
-	stack.addInStack(person)
+	var stack  queue  = &Node{}
+	stack.addInQueue(person)
 	thisMap := GetCurrentPlayerMap(chunk)
 	m:=GetPlayerDrawChunkMap(thisMap, worldMap)
 	find := true
 	graph := Graphpath{}
-
+	visited:= make(map[Chunk.Coordinate]bool)
 	for find {
 
-		currentCoord, e := stack.getDataS()
 
+		currentCoord, e := stack.getData()
+		fmt.Println("Find", currentCoord)
 		//if currentCoord == target{
 		//	fmt.Println("FIND!", currentCoord)
 		//	return graph
@@ -30,9 +31,9 @@ func createGraph(worldMap *WorldMap,person Chunk.Coordinate, target Chunk.Coordi
 			fmt.Println("Stack empty", currentCoord)
 			return graph
 		}
-		coords:= getAllCoordinate(currentCoord, &m)
+		coords:= getAllCoordinate(currentCoord, &m, visited)
 		graph.addEdge(currentCoord, coords)
-		stack = addCoordToStack(stack, coords, &m, graph)
+		stack = addCoordToStack(stack, coords, &m, graph, visited)
 		
 
 
@@ -47,7 +48,7 @@ return graph
 }
 
 // переделать под переход только на свободные тайлы
-func getAllCoordinate(person Chunk.Coordinate,  m *personMap) []Chunk.Coordinate {
+func getAllCoordinate(person Chunk.Coordinate,  m *personMap, visited map[Chunk.Coordinate]bool ) []Chunk.Coordinate {
 	var coord [8]Chunk.Coordinate
 
 	coord[0].X = person.X+32
@@ -76,7 +77,7 @@ func getAllCoordinate(person Chunk.Coordinate,  m *personMap) []Chunk.Coordinate
 var noBysyTile []Chunk.Coordinate
 	for _, v := range coord {
 		 t, e :=m.getTile(v)
-		 if e != nil {
+		 if e != nil || visited[v] {
 			 continue
 		 }
 		 if !t.Busy {
@@ -100,10 +101,11 @@ for _, v := range coords {
 	}
 }
 }
-func addCoordToStack( s stack, coords  []Chunk.Coordinate, m *personMap, graphpath Graphpath) stack {
+func addCoordToStack( s queue, coords  []Chunk.Coordinate, m *personMap, graphpath Graphpath, visited map[Chunk.Coordinate]bool) queue {
 	for _, v := range coords{
-		if !graphpath.checkEdge(v) {
-			s.addInStack(v)
+		if !graphpath.checkEdge(v) && !visited[v]{
+			visited[v] = true
+			s.addInQueue(v)
 		}
 
 

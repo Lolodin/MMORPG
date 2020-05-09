@@ -98,7 +98,17 @@ func NewChunk(idChunk Coordinate) Chunk {
 					if tree.Species != "" {
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
 						tile.Busy = true
+						tree = Tree{}
 					}
+					log.WithFields(log.Fields{
+						"package": "Chunk",
+						"func" : "NewChunk",
+						"idChunk": idChunk,
+						"tree species": tree.Species,
+						"Busy" : tile.Busy,
+						"tile" : tile,
+
+					}).Info("Create new tile")
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
@@ -134,9 +144,20 @@ func NewChunk(idChunk Coordinate) Chunk {
 					}
 
 					if tree.Species != "" {
+
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
 						tile.Busy = true
+						tree = Tree{}
 					}
+					log.WithFields(log.Fields{
+						"package": "Chunk",
+						"func" : "NewChunk",
+						"idChunk": idChunk,
+						"tree species": tree.Species,
+						"Busy" : tile.Busy,
+						"tile" : tile,
+
+					}).Info("Create new tile")
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
@@ -173,7 +194,18 @@ func NewChunk(idChunk Coordinate) Chunk {
 					if tree.Species != "" {
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
 						tile.Busy = true
+						tree = Tree{}
 					}
+					log.WithFields(log.Fields{
+						"package": "Chunk",
+						"func" : "NewChunk",
+						"idChunk": idChunk,
+						"tree species": tree.Species,
+						"Busy" : tile.Busy,
+						"tile" : tile,
+
+					}).Info("Create new tile")
+					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
 			}
@@ -206,9 +238,20 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Key = "Mount"
 					}
 					if tree.Species != "" {
+
 						treeMap[Coordinate{X: tree.X, Y: tree.Y}] = tree
 						tile.Busy = true
+						tree = Tree{}
 					}
+					log.WithFields(log.Fields{
+						"package": "Chunk",
+						"func" : "NewChunk",
+						"idChunk": idChunk,
+						"tree species": tree.Species,
+						"Busy" : tile.Busy,
+						"tile" : tile,
+
+					}).Info("Create new tile")
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}

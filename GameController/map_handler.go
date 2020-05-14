@@ -83,6 +83,23 @@ func PlayerHandler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 				}).Error("Connect cancel")
 				return
 			}
+			walkpath := W.Player[player.Name].GetPlayerXY()
+			rwalkpath:= Chunk.Coordinate{player.X, player.Y}
+			if walkpath == rwalkpath {
+				log.WithFields(log.Fields{
+					"Player" : player,
+					"path" : rwalkpath,
+				}).Info("skip set walk")
+				pls := W.GetPlayers()
+				websocket.JSON.Send(ws, pls)
+				continue
+			}
+			log.WithFields(log.Fields{
+				"Player" :W.Player[player.Name],
+				"PlayerResponse" : player,
+				"walkpath": walkpath,
+				"path" : rwalkpath,
+			}).Info("start walk")
 			W.Player[player.Name].SetWalkPath(player.X, player.Y, W)
 			pls := W.GetPlayers()
 			websocket.JSON.Send(ws, pls)

@@ -30,7 +30,7 @@ func NewPlayer(n, password string) *Player {
 	p.Y = 16
 	p.Name = n
 	p.password = password
-	p.speed = 5
+	p.speed = 15
 	p.move = false
 
 	return &p
@@ -44,14 +44,18 @@ func (p *Player) isMove() bool {
 
 //устанавливаем путь следования персонажа
 func (p *Player) SetWalkPath(x, y int, m *WorldMap) {
+
 	if p.X != x && p.Y != y {
 		xy := Chunk.Coordinate{X: x, Y: y}
 		p.walkPath = xy
+		// Использовать канал для сигнала?
 		if !p.move {
+
 			go p.walk(m)
 		}
 
 	} else {
+
 		return
 	}
 
@@ -60,6 +64,9 @@ func (p *Player) SetWalkPath(x, y int, m *WorldMap) {
 //Получаем путь куда должен перемещаться персонаж
 func (p *Player) GetWalkPath() Chunk.Coordinate {
 	return p.walkPath
+}
+func (p *Player) GetPlayerXY() Chunk.Coordinate {
+	return Chunk.Coordinate{X:p.X,Y:p.Y}
 }
 
 func (p *Player) SetPassword(pass string) {
@@ -85,75 +92,79 @@ func (p *Player) moveSwitch() {
 	}
 }
 func (p *Player) walk(m *WorldMap) {
-	//p.mut.Lock()
-	//p.move = true
-	//p.mut.Unlock()
-	//for p.move {
-	//	time.Sleep(25 * time.Millisecond)
-	//	if p.Y > p.walkPath.Y {
-	//		p.Y -= p.speed
-	//	}
-	//	if p.Y < p.walkPath.Y {
-	//		p.Y += p.speed
-	//	}
-	//	if p.X > p.walkPath.X {
-	//		p.X -= p.speed
-	//	}
-	//	if p.X < p.walkPath.X {
-	//		p.X += p.speed
-	//	}
-	//	if (p.X == p.walkPath.X && p.Y == p.walkPath.Y) || p.move == false {
-	//		p.mut.Lock()
-	//		p.move = false
-	//		p.mut.Unlock()
-	//		return
-	//	}
-
-	//__________________________________________________________
-	a:=m.CheckBusyTile(p.walkPath.X, p.walkPath.Y)
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Path not found", r)
+			p.mut.Lock()
+			p.move = false
+			p.mut.Unlock()
+		}
+	}()
+	a := m.CheckBusyTile(p.walkPath.X, p.walkPath.Y)
 	if a {
 		log.WithFields(log.Fields{
-			"package": "WorldMap",
-			"func" : "walk",
+			"package":  "WorldMap",
+			"func":     "walk",
 			"BusyTile": a,
-			"Person" : Chunk.Coordinate{p.X, p.Y},
-			"target" : p.walkPath,
-
-		}).Info("N")
+			"Person":   Chunk.Coordinate{p.X, p.Y},
+			"target":   p.walkPath,
+		}).Info("Tile Busy")
 		return
 	}
 	p.mut.Lock()
 	p.move = true
 	p.mut.Unlock()
-	graph := createGraph(m, Chunk.Coordinate{p.X,p.Y}, p.walkPath )
-	path:=Astar(graph,Chunk.Coordinate{p.X,p.Y}, p.walkPath)
+	graph := createGraph(m, Chunk.Coordinate{p.X, p.Y}, p.walkPath)
+	path := Astar(graph, Chunk.Coordinate{p.X, p.Y}, p.walkPath)
 	var s stack = &Node{}
-	q:= createStackpath(path, s, p.walkPath)
+	q := createStackpath(path, s, p.walkPath)
 	i := true
 	_, err := q.getDataS()
-	if err!=nil{
+	if err != nil {
 		fmt.Println(err.Error())
 
 	}
+	log.WithFields(log.Fields{
+		"package":  "WorldMap",
+		"func":     "walk",
+		"Person":   Chunk.Coordinate{p.X, p.Y},
+		"target":   p.walkPath,
+		"path" : q,
+	}).Info("Walker path")
 	for i {
 
-		time.Sleep(1 * time.Second)
 		e, err := q.getDataS()
-		if err!=nil{
+		if err != nil {
 			fmt.Println(err.Error())
 			break
 		}
+		fmt.Println(e, "Move")
+		for true {
+			time.Sleep(time.Duration(p.speed) * time.Millisecond)
+			fmt.Println("GO,", e)
+			if p.Y > e.Y {
+				p.Y -= 1
+			}
+			if p.Y < e.Y {
+				p.Y += 1
+			}
+			if p.X > e.X {
+				p.X -= 1
+			}
+			if p.X < e.X {
+				p.X += 1
+			}
+			if p.X == e.X && p.Y == e.Y {
+				break
+			}
 
-
-		p.X = e.X
-		p.Y = e.Y
-		fmt.Println(p.X, p.Y, "WARNING!")
+		}
+	}
+		p.mut.Lock()
+		p.move = false
+		fmt.Println("STOP MOVE")
+		p.mut.Unlock()
+		return
 
 	}
-	p.mut.Lock()
-	p.move = false
-	p.mut.Unlock()
-	return
-
-}
 

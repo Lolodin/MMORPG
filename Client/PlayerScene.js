@@ -14,7 +14,10 @@ class PlayerScene extends Phaser.Scene {
         this.CurrentChunk =0
         this.CHUNKIDSIZE = 32
         this.chunkSize =  32 *  32
-        this.targetPath = [0,0] // Путь куда должен двигаться персонаж
+        this.targetPath = [16,16] // Путь куда должен двигаться персонаж
+        //Константы для отправки запроса
+
+
 
 
             }

@@ -2,7 +2,6 @@ package WorldMap
 
 import (
 	"Test/Chunk"
-	"fmt"
 )
 
 type Graphpath map[Chunk.Coordinate][]Chunk.Coordinate
@@ -21,14 +20,10 @@ func createGraph(worldMap *WorldMap,person Chunk.Coordinate, target Chunk.Coordi
 
 
 		currentCoord, e := stack.getData()
-		fmt.Println("Find", currentCoord)
-		//if currentCoord == target{
-		//	fmt.Println("FIND!", currentCoord)
-		//	return graph
-		//}
+		//fmt.Println("Find", currentCoord)
 		// возврат ошибки
 		if e != nil {
-			fmt.Println("Stack empty", currentCoord)
+			//fmt.Println("Stack empty", currentCoord)
 			return graph
 		}
 		coords:= getAllCoordinate(currentCoord, &m, visited)

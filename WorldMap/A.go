@@ -86,7 +86,7 @@ func (n *Node) printChild() {
 		n.NextNode.printChild()
 	}
 }
-//Функция поиска пути, возвращает Очередь из координат по которой пойдет персонаж
+//Функция поиска пути, возвращает Очередь из координат
 func Astar(graphpath Graphpath, person Chunk.Coordinate, target Chunk.Coordinate) Node {
 var q queue = &Node{}
 q.addInQueue(person)
@@ -104,9 +104,9 @@ coord, e := q.getData()
 	if coord == target {
 		return  path[coord]
 	}
-	fmt.Println(coord,"newLOOP")
+
 	if visited[coord] {
-		fmt.Println("Visited")
+		// fmt.Println("Visited")
 		if e!= nil {
 			panic("error get chunk")
 		}

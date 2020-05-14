@@ -38,6 +38,7 @@ func (w *WorldMap) AddChunk(coordinate Chunk.Coordinate, chunk Chunk.Chunk) {
 			"package": "WorldMap",
 			"func" : "AddChunk",
 			"Chunk": chunk,
+			"map Tree": chunk.Tree,
 		}).Info("Create new Chunk")
 		w.Unlock()
 	}

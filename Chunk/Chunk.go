@@ -53,7 +53,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 		"func" : "NewChunk",
 		"idChunk": idChunk,
 
-	}).Info("Create new Chunck")
+	}).Info("Create new Chunk")
 	chunk := Chunk{ChunkID: [2]int{idChunk.X, idChunk.Y}}
 	var chunkXMax, chunkYMax int
 	var chunkMap map[Coordinate]Tile
@@ -100,15 +100,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Busy = true
 						tree = Tree{}
 					}
-					log.WithFields(log.Fields{
-						"package": "Chunk",
-						"func" : "NewChunk",
-						"idChunk": idChunk,
-						"tree species": tree.Species,
-						"Busy" : tile.Busy,
-						"tile" : tile,
 
-					}).Info("Create new tile")
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
@@ -149,15 +141,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Busy = true
 						tree = Tree{}
 					}
-					log.WithFields(log.Fields{
-						"package": "Chunk",
-						"func" : "NewChunk",
-						"idChunk": idChunk,
-						"tree species": tree.Species,
-						"Busy" : tile.Busy,
-						"tile" : tile,
 
-					}).Info("Create new tile")
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
@@ -196,15 +180,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Busy = true
 						tree = Tree{}
 					}
-					log.WithFields(log.Fields{
-						"package": "Chunk",
-						"func" : "NewChunk",
-						"idChunk": idChunk,
-						"tree species": tree.Species,
-						"Busy" : tile.Busy,
-						"tile" : tile,
 
-					}).Info("Create new tile")
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}
@@ -243,15 +219,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 						tile.Busy = true
 						tree = Tree{}
 					}
-					log.WithFields(log.Fields{
-						"package": "Chunk",
-						"func" : "NewChunk",
-						"idChunk": idChunk,
-						"tree species": tree.Species,
-						"Busy" : tile.Busy,
-						"tile" : tile,
 
-					}).Info("Create new tile")
 					chunkMap[Coordinate{X: tile.X, Y: tile.Y}] = tile
 
 				}

@@ -3,8 +3,8 @@ package WorldMap
 import (
 	"Test/Chunk"
 	"fmt"
-	"sync"
 	log "github.com/sirupsen/logrus"
+	"sync"
 )
 
 type WorldMap struct {
@@ -35,9 +35,9 @@ func (w *WorldMap) AddChunk(coordinate Chunk.Coordinate, chunk Chunk.Chunk) {
 		w.Lock()
 		w.Chunks[coordinate] = chunk
 		log.WithFields(log.Fields{
-			"package": "WorldMap",
-			"func" : "AddChunk",
-			"Chunk": chunk,
+			"package":  "WorldMap",
+			"func":     "AddChunk",
+			"Chunk":    chunk,
 			"map Tree": chunk.Tree,
 		}).Info("Create new Chunk")
 		w.Unlock()
@@ -108,11 +108,9 @@ func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
 	chunkId := GetChunkID(PX, PY)
 	w.Lock()
 	defer w.Unlock()
-	b:= w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Busy
-	c:= w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Key
+	b := w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Busy
+	c := w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Key
 	return b && c == "Water"
-
-
 
 }
 

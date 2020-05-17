@@ -12,6 +12,7 @@ const CHUNKIDSIZE = 32
 const TILE_SIZE = 32
 const CHUNK_SIZE = 32 * 32
 const PERLIN_SEED float32 = 2300
+
 // Чанк который хранит тайтлы и другие игровые объекты
 type Chunk struct {
 	ChunkID [2]int
@@ -23,9 +24,9 @@ type Chunk struct {
 Тайтл игрового мира
 */
 type Tile struct {
-	Key string `json:"key"`
-	X   int    `json:"x"`
-	Y   int    `json:"y"`
+	Key  string `json:"key"`
+	X    int    `json:"x"`
+	Y    int    `json:"y"`
 	Busy bool
 }
 
@@ -50,9 +51,8 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 	log.WithFields(log.Fields{
 		"package": "Chunk",
-		"func" : "NewChunk",
+		"func":    "NewChunk",
 		"idChunk": idChunk,
-
 	}).Info("Create new Chunk")
 	chunk := Chunk{ChunkID: [2]int{idChunk.X, idChunk.Y}}
 	var chunkXMax, chunkYMax int
@@ -230,7 +230,6 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 	chunk.Map = chunkMap
 	chunk.Tree = treeMap
-
 
 	return chunk
 }

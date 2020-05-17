@@ -4,15 +4,15 @@ import (
 	"Test/Chunk"
 	"encoding/json"
 	"fmt"
-	"math"
 	log "github.com/sirupsen/logrus"
+	"math"
 )
 
 type personMap [9]Chunk.Chunk
 
 func (m *personMap) getTile(coordinate Chunk.Coordinate) (Chunk.Tile, error) {
 	chunkID := GetChunkID(coordinate.X, coordinate.Y)
-	for _, v:= range m{
+	for _, v := range m {
 		if v.ChunkID == [2]int{chunkID.X, chunkID.Y} {
 			return v.Map[coordinate], nil
 		}
@@ -20,12 +20,10 @@ func (m *personMap) getTile(coordinate Chunk.Coordinate) (Chunk.Tile, error) {
 	return Chunk.Tile{}, fmt.Errorf("Tile not Found")
 }
 
-
 type playerMap struct {
 	IDplayer int
 	Map      [9]Chunk.Chunk `json:"CurrentMap"`
 }
-
 
 /*
 Получаем ID чанка из координат(персонажа\объекта и т.д.)
@@ -151,10 +149,10 @@ func MapToJSON(m [9]Chunk.Chunk, id int) []byte {
 	if e != nil {
 		log.WithFields(log.Fields{
 			"package": "worldMap",
-			"func" : "Map to Json",
-			"error": e,
-			"map" : a.Map,
-			"player" : a.IDplayer,
+			"func":    "Map to Json",
+			"error":   e,
+			"map":     a.Map,
+			"player":  a.IDplayer,
 		}).Warning("Error Marshal player map")
 		return nil
 	}

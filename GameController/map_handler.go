@@ -5,10 +5,10 @@ import (
 	"Test/WorldMap"
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 	"io/ioutil"
 	"net/http"
-	log "github.com/sirupsen/logrus"
 )
 
 type requestMap struct {
@@ -32,9 +32,9 @@ func Map_Handler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package": "GameController",
-				"func" : "InitHandler",
-				"error": err,
-				"data" : body,
+				"func":    "InitHandler",
+				"error":   err,
+				"data":    body,
 			}).Error("Error Marshal data")
 		}
 		fmt.Println(rm.X, rm.Y)
@@ -56,8 +56,8 @@ func PlayerHandler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 			if err := recover(); err != nil {
 				log.WithFields(log.Fields{
 					"package": "GameController",
-					"func" : "PlayerHandler",
-					"error": err,
+					"func":    "PlayerHandler",
+					"error":   err,
 				}).Error("Error ws")
 			}
 
@@ -66,45 +66,44 @@ func PlayerHandler(W *WorldMap.WorldMap) func(ws *websocket.Conn) {
 		player := pingPlayer{}
 		websocket.JSON.Receive(ws, &player)
 
-
 		//Game Loop
 		log.WithFields(log.Fields{
 			"package": "GameController",
-			"func" : "PlayerHandler",
-			"player": player,
+			"func":    "PlayerHandler",
+			"player":  player,
 		}).Info("Connect player")
 		for {
 			err := websocket.JSON.Receive(ws, &player)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"package": "GameController",
-					"func" : "PlayerHandler",
-					"error": err,
+					"func":    "PlayerHandler",
+					"error":   err,
 				}).Error("Connect cancel")
 				return
 			}
 			walkpath := W.Player[player.Name].GetPlayerXY()
-			rwalkpath:= Chunk.Coordinate{player.X, player.Y}
+			rwalkpath := Chunk.Coordinate{player.X, player.Y}
 			if walkpath == rwalkpath {
 				log.WithFields(log.Fields{
-					"Player" : player,
-					"path" : rwalkpath,
+					"Player": player,
+					"path":   rwalkpath,
 				}).Info("skip set walk")
 				pls := W.GetPlayers()
 				websocket.JSON.Send(ws, pls)
 				continue
 			}
 			log.WithFields(log.Fields{
-				"Player" :W.Player[player.Name],
-				"PlayerResponse" : player,
-				"walkpath": walkpath,
-				"path" : rwalkpath,
+				"Player":         W.Player[player.Name],
+				"PlayerResponse": player,
+				"walkpath":       walkpath,
+				"path":           rwalkpath,
 			}).Info("start walk")
 			W.Player[player.Name].SetWalkPath(player.X, player.Y, W)
 			pls := W.GetPlayers()
 			websocket.JSON.Send(ws, pls)
 			log.WithFields(log.Fields{
-				"Player" : player,
+				"Player": player,
 			}).Info("Player log")
 
 		}

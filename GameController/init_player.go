@@ -3,9 +3,9 @@ package GameController
 import (
 	"Test/WorldMap"
 	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
-	log "github.com/sirupsen/logrus"
 )
 
 type requestPlayer struct {
@@ -29,9 +29,9 @@ func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 		if err != nil {
 			log.WithFields(log.Fields{
 				"package": "GameController",
-				"func" : "InitHandler",
-				"error": err,
-				"data" : body,
+				"func":    "InitHandler",
+				"error":   err,
+				"data":    body,
 			}).Error("Error get player data")
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -44,9 +44,9 @@ func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 				if err != nil {
 					log.WithFields(log.Fields{
 						"package": "GameController",
-						"func" : "InitHandler",
-						"error": err,
-						"data" : resPl,
+						"func":    "InitHandler",
+						"error":   err,
+						"data":    resPl,
 					}).Error("Error Marshal player data")
 					w.Write([]byte("{Error: error server}"))
 					return
@@ -62,9 +62,9 @@ func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 			if err != nil {
 				log.WithFields(log.Fields{
 					"package": "GameController",
-					"func" : "InitHandler",
-					"error": err,
-					"data" : resPl,
+					"func":    "InitHandler",
+					"error":   err,
+					"data":    resPl,
 				}).Error("Error Marshal player data")
 				w.Write([]byte("{Error: error server}"))
 				return

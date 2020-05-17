@@ -23,7 +23,6 @@ type Players struct {
 	P []Player `json:"players"`
 }
 
-
 func NewPlayer(n, password string) *Player {
 	p := Player{}
 	p.X = 16
@@ -50,12 +49,14 @@ func (p *Player) SetWalkPath(x, y int, m *WorldMap) {
 		p.walkPath = xy
 		// Использовать канал для сигнала?
 		if !p.move {
-
 			go p.walk(m)
+		} else {
+			p.mut.Lock()
+			p.move = false
+			p.mut.Unlock()
 		}
 
 	} else {
-
 		return
 	}
 
@@ -65,13 +66,15 @@ func (p *Player) SetWalkPath(x, y int, m *WorldMap) {
 func (p *Player) GetWalkPath() Chunk.Coordinate {
 	return p.walkPath
 }
+
 func (p *Player) GetPlayerXY() Chunk.Coordinate {
-	return Chunk.Coordinate{X:p.X,Y:p.Y}
+	return Chunk.Coordinate{X: p.X, Y: p.Y}
 }
 
 func (p *Player) SetPassword(pass string) {
 	p.password = pass
 }
+
 func (p *Player) GetPassword() string {
 	return p.password
 }
@@ -125,11 +128,11 @@ func (p *Player) walk(m *WorldMap) {
 
 	}
 	log.WithFields(log.Fields{
-		"package":  "WorldMap",
-		"func":     "walk",
-		"Person":   Chunk.Coordinate{p.X, p.Y},
-		"target":   p.walkPath,
-		"path" : q,
+		"package": "WorldMap",
+		"func":    "walk",
+		"Person":  Chunk.Coordinate{p.X, p.Y},
+		"target":  p.walkPath,
+		"path":    q,
 	}).Info("Walker path")
 	for i {
 
@@ -154,17 +157,23 @@ func (p *Player) walk(m *WorldMap) {
 			if p.X < e.X {
 				p.X += 1
 			}
+			if !p.move {
+				p.X = e.X
+				p.Y = e.Y
+				fmt.Println("FALSE")
+				return
+			}
+
 			if p.X == e.X && p.Y == e.Y {
 				break
 			}
 
 		}
 	}
-		p.mut.Lock()
-		p.move = false
-		fmt.Println("STOP MOVE")
-		p.mut.Unlock()
-		return
+	p.mut.Lock()
+	p.move = false
+	fmt.Println("STOP MOVE")
+	p.mut.Unlock()
+	return
 
-	}
-
+}

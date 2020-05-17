@@ -3,6 +3,7 @@ package main
 import (
 	"Test/GameController"
 	"Test/WorldMap"
+
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
 	"html/template"
@@ -27,6 +28,8 @@ func main() {
 	http.HandleFunc("/map", GameController.Map_Handler(&World))
 	http.Handle("/player", websocket.Handler(GameController.PlayerHandler(&World)))
 	http.HandleFunc("/", indexHandler)
+
+	//static
 	http.Handle("/node_modules/phaser/dist/", http.StripPrefix("/node_modules/phaser/dist/", http.FileServer(http.Dir("./node_modules/phaser/dist/"))))
 	http.Handle("/Client/", http.StripPrefix("/Client/", http.FileServer(http.Dir("./Client/"))))
 	http.Handle("/Client/content/", http.StripPrefix("/Client/content/", http.FileServer(http.Dir("./Client/content/"))))

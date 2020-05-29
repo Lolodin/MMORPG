@@ -10,18 +10,19 @@ import (
 	"net/http"
 	"os"
 )
-func init(){
 
-filelog, e:= os.Create("log")
-if e != nil {
-	panic("error create log file")
-}
-log.SetOutput(filelog)
+func init() {
+
+	filelog, e := os.Create("log")
+	if e != nil {
+		panic("error create log file")
+	}
+	log.SetOutput(filelog)
 }
 func main() {
 	log.WithFields(log.Fields{
 		"package": "main",
-		"func" : "main",
+		"func":    "main",
 	}).Info("Server start")
 	World := WorldMap.NewCacheWorldMap()
 	http.HandleFunc("/init", GameController.InitHandler(&World))
@@ -37,12 +38,13 @@ func main() {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package": "main",
-			"func" : "main",
-			"error": err,
+			"func":    "main",
+			"error":   err,
 		}).Fatal("Error start server")
 	}
 
 }
+
 // Обработчик для index.html, здесь мы просто отдаем клиент пользователю
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles("index.html")
@@ -50,8 +52,8 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.WithFields(log.Fields{
 			"package": "main",
-			"func" : "indexHandler",
-			"error": err,
+			"func":    "indexHandler",
+			"error":   err,
 		}).Error("Error get index.html")
 	}
 }

@@ -1,4 +1,4 @@
-name: golangci-lin
+name: golangci-lint
 on:
   push:
     tags:

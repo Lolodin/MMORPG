@@ -12,9 +12,9 @@ type MobGenerator struct {
 	CurrentMob *Mob
 }
 
-func NewMobGenerator() MobGenerator {
-
-}
+//func NewMobGenerator() MobGenerator {
+//
+//}
 
 // Запуск в конструкторе
 func (g *MobGenerator) Genetation() {

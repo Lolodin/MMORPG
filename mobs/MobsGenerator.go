@@ -2,17 +2,15 @@ package mobs
 
 import (
 	"Test/chunk"
-	"math/rand"
 	"time"
 )
 
 type MobGenerator struct {
 	chunk.Coordinate
-	tik time.Duration
-	ListMob []string
+	tik        time.Duration
+	ListMob    []string
 	CurrentMob *Mob
 }
-
 
 func NewMobGenerator() MobGenerator {
 
@@ -22,7 +20,7 @@ func NewMobGenerator() MobGenerator {
 func (g *MobGenerator) Genetation() {
 	for {
 		if g.CurrentMob == nil {
-			
+
 		}
 		time.Sleep(g.tik * time.Second)
 	}

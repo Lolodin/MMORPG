@@ -4,15 +4,14 @@ import "Test/chunk"
 
 type Mob struct {
 	chunk.Coordinate
-	Name string
-	health int
-	speed int
+	Name     string
+	health   int
+	speed    int
 	strength int
-	Parent *MobGenerator
+	Parent   *MobGenerator
 }
 
-
-func NewMob(name string, X,Y int, g *MobGenerator) Mob {
+func NewMob(name string, X, Y int, g *MobGenerator) Mob {
 	var mob Mob
 	mob.X = X
 	mob.Y = Y
@@ -23,6 +22,6 @@ func NewMob(name string, X,Y int, g *MobGenerator) Mob {
 	mob.Parent = g
 	return mob
 }
-func(m *Mob) Die() {
+func (m *Mob) Die() {
 	m.Parent.CurrentMob = nil
 }

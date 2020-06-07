@@ -1,7 +1,7 @@
 package GameController
 
 import (
-	"Test/WorldMap"
+	"Test/wmap"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -20,7 +20,7 @@ type responsePlayer struct {
 }
 
 // Точка входа в игры, юзер отправляет нам свои данные, мы отдаем данные персонажа, уникальный ид или name через которое будет совершенно socket подключение
-func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) {
+func InitHandler(W *wmap.WorldMap) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		body, _ := ioutil.ReadAll(r.Body)
@@ -55,7 +55,7 @@ func InitHandler(W *WorldMap.WorldMap) func(http.ResponseWriter, *http.Request) 
 				return
 			}
 		} else {
-			p := WorldMap.NewPlayer(rp.Name, rp.Password)
+			p := wmap.NewPlayer(rp.Name, rp.Password)
 			W.AddPlayer(p)
 			resPl := responsePlayer{Error: "null", X: p.X, Y: p.Y, Name: p.Name}
 			res, err := json.Marshal(resPl)

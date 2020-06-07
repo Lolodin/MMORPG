@@ -1,47 +1,47 @@
-package WorldMap
+package wmap
 
 import (
-	"Test/Chunk"
+	"Test/chunk"
 	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"math"
 )
 
-type personMap [9]Chunk.Chunk
+type personMap [9]chunk.Chunk
 
-func (m *personMap) getTile(coordinate Chunk.Coordinate) (Chunk.Tile, error) {
+func (m *personMap) getTile(coordinate chunk.Coordinate) (chunk.Tile, error) {
 	chunkID := GetChunkID(coordinate.X, coordinate.Y)
 	for _, v := range m {
 		if v.ChunkID == [2]int{chunkID.X, chunkID.Y} {
 			return v.Map[coordinate], nil
 		}
 	}
-	return Chunk.Tile{}, fmt.Errorf("Tile not Found")
+	return chunk.Tile{}, fmt.Errorf("Tile not Found")
 }
 
 type playerMap struct {
 	IDplayer int
-	Map      [9]Chunk.Chunk `json:"CurrentMap"`
+	Map      [9]chunk.Chunk `json:"CurrentMap"`
 }
 
 /*
 Получаем ID чанка из координат(персонажа\объекта и т.д.)
 */
-func GetChunkID(x, y int) Chunk.Coordinate {
-	tileX := float64(float64(x) / float64(Chunk.CHUNKIDSIZE))
-	tileY := float64(float64(y) / float64(Chunk.CHUNKIDSIZE))
+func GetChunkID(x, y int) chunk.Coordinate {
+	tileX := float64(float64(x) / float64(chunk.CHUNKIDSIZE))
+	tileY := float64(float64(y) / float64(chunk.CHUNKIDSIZE))
 
-	var ChunkID Chunk.Coordinate
+	var ChunkID chunk.Coordinate
 	if tileX < 0 {
-		ChunkID.X = int(math.Floor(tileX / float64(Chunk.CHUNKIDSIZE)))
+		ChunkID.X = int(math.Floor(tileX / float64(chunk.CHUNKIDSIZE)))
 	} else {
-		ChunkID.X = int(math.Ceil(tileX / float64(Chunk.CHUNKIDSIZE)))
+		ChunkID.X = int(math.Ceil(tileX / float64(chunk.CHUNKIDSIZE)))
 	}
 	if tileY < 0 {
-		ChunkID.Y = int(math.Floor(tileY / float64(Chunk.CHUNKIDSIZE)))
+		ChunkID.Y = int(math.Floor(tileY / float64(chunk.CHUNKIDSIZE)))
 	} else {
-		ChunkID.Y = int(math.Ceil(tileY / float64(Chunk.CHUNKIDSIZE)))
+		ChunkID.Y = int(math.Ceil(tileY / float64(chunk.CHUNKIDSIZE)))
 	}
 	if tileX == 0 {
 		ChunkID.X = 1
@@ -56,67 +56,67 @@ func GetChunkID(x, y int) Chunk.Coordinate {
 /*
 Получаем текущую карту которую должен видеть персонаж
 */
-func GetCurrentPlayerMap(currentChunkID Chunk.Coordinate) [9]Chunk.Coordinate {
-	var CurrentMap [9]Chunk.Coordinate
-	coordinateX := currentChunkID.X * Chunk.CHUNK_SIZE
-	coordinateY := currentChunkID.Y * Chunk.CHUNK_SIZE
+func GetCurrentPlayerMap(currentChunkID chunk.Coordinate) [9]chunk.Coordinate {
+	var CurrentMap [9]chunk.Coordinate
+	coordinateX := currentChunkID.X * chunk.CHUNK_SIZE
+	coordinateY := currentChunkID.Y * chunk.CHUNK_SIZE
 
 	CurrentMap[0] = currentChunkID
 
-	x := coordinateX + Chunk.CHUNK_SIZE
-	y := coordinateY + Chunk.CHUNK_SIZE
+	x := coordinateX + chunk.CHUNK_SIZE
+	y := coordinateY + chunk.CHUNK_SIZE
 	CurrentMap[1] = GetChunkID(x, y)
-	x = coordinateX + Chunk.CHUNK_SIZE
+	x = coordinateX + chunk.CHUNK_SIZE
 	y = coordinateY
 	CurrentMap[2] = GetChunkID(x, y)
 	if coordinateY < 0 {
-		x = coordinateX + Chunk.CHUNK_SIZE
-		y = coordinateY - Chunk.CHUNK_SIZE
+		x = coordinateX + chunk.CHUNK_SIZE
+		y = coordinateY - chunk.CHUNK_SIZE
 	} else {
-		x = coordinateX + Chunk.CHUNK_SIZE
-		y = coordinateY - Chunk.CHUNK_SIZE - 1
+		x = coordinateX + chunk.CHUNK_SIZE
+		y = coordinateY - chunk.CHUNK_SIZE - 1
 	}
 	CurrentMap[3] = GetChunkID(x, y)
 	x = coordinateX
-	y = coordinateY + Chunk.CHUNK_SIZE
+	y = coordinateY + chunk.CHUNK_SIZE
 	CurrentMap[4] = GetChunkID(x, y)
 	if coordinateY < 0 {
 		x = coordinateX
-		y = coordinateY - Chunk.CHUNK_SIZE
+		y = coordinateY - chunk.CHUNK_SIZE
 	} else {
 		x = coordinateX
-		y = coordinateY - Chunk.CHUNK_SIZE - 1
+		y = coordinateY - chunk.CHUNK_SIZE - 1
 	}
 	CurrentMap[5] = GetChunkID(x, y)
 	if coordinateX < 0 {
-		x = coordinateX - Chunk.CHUNK_SIZE
-		y = coordinateY + Chunk.CHUNK_SIZE
+		x = coordinateX - chunk.CHUNK_SIZE
+		y = coordinateY + chunk.CHUNK_SIZE
 	} else {
-		x = coordinateX - Chunk.CHUNK_SIZE - 1
-		y = coordinateY + Chunk.CHUNK_SIZE
+		x = coordinateX - chunk.CHUNK_SIZE - 1
+		y = coordinateY + chunk.CHUNK_SIZE
 	}
 	CurrentMap[6] = GetChunkID(x, y)
 	if coordinateX < 0 {
-		x = coordinateX - Chunk.CHUNK_SIZE
+		x = coordinateX - chunk.CHUNK_SIZE
 		y = coordinateY
 	} else {
-		x = coordinateX - Chunk.CHUNK_SIZE - 1
+		x = coordinateX - chunk.CHUNK_SIZE - 1
 		y = coordinateY
 	}
 	CurrentMap[7] = GetChunkID(x, y)
 	if coordinateX < 0 && coordinateY < 0 {
-		x = coordinateX - Chunk.CHUNK_SIZE
-		y = coordinateY - Chunk.CHUNK_SIZE
+		x = coordinateX - chunk.CHUNK_SIZE
+		y = coordinateY - chunk.CHUNK_SIZE
 	} else {
 		if coordinateX > 0 {
-			x = coordinateX - Chunk.CHUNK_SIZE - 1
+			x = coordinateX - chunk.CHUNK_SIZE - 1
 		} else {
-			x = coordinateX - Chunk.CHUNK_SIZE
+			x = coordinateX - chunk.CHUNK_SIZE
 		}
 		if coordinateY < 0 {
-			y = coordinateY - Chunk.CHUNK_SIZE
+			y = coordinateY - chunk.CHUNK_SIZE
 		} else {
-			y = coordinateY - Chunk.CHUNK_SIZE - 1
+			y = coordinateY - chunk.CHUNK_SIZE - 1
 		}
 
 	}
@@ -125,13 +125,13 @@ func GetCurrentPlayerMap(currentChunkID Chunk.Coordinate) [9]Chunk.Coordinate {
 }
 
 //Получаем готовую карту из 9 чанков для отображения
-func GetPlayerDrawChunkMap(currentMap [9]Chunk.Coordinate, W *WorldMap) personMap {
+func GetPlayerDrawChunkMap(currentMap [9]chunk.Coordinate, W *WorldMap) personMap {
 	var playerMap personMap
 	for i, m := range currentMap {
 		if W.isChunkExist(m) {
 			playerMap[i], _ = W.GetChunk(m)
 		} else {
-			chunk := Chunk.NewChunk(m)
+			chunk := chunk.NewChunk(m)
 			playerMap[i] = chunk
 			W.AddChunk(m, chunk)
 		}
@@ -140,7 +140,7 @@ func GetPlayerDrawChunkMap(currentMap [9]Chunk.Coordinate, W *WorldMap) personMa
 	return playerMap
 }
 
-func MapToJSON(m [9]Chunk.Chunk, id int) []byte {
+func MapToJSON(m [9]chunk.Chunk, id int) []byte {
 	a := playerMap{
 		IDplayer: id,
 		Map:      m,

@@ -1,7 +1,7 @@
-package WorldMap
+package wmap
 
 import (
-	"Test/Chunk"
+	"Test/chunk"
 	"fmt"
 	"testing"
 )
@@ -9,7 +9,7 @@ import (
 func TestQueue(t *testing.T) {
 	var queue queue = &Node{}
 	for i := 0; i < 5; i++ {
-		queue.addInQueue(Chunk.Coordinate{i, i + 1})
+		queue.addInQueue(chunk.Coordinate{i, i + 1})
 	}
 	i := 0
 	for i < 10 {
@@ -26,9 +26,9 @@ func TestQueue(t *testing.T) {
 	fmt.Println(m["lol2"])
 }
 func TestStack(t *testing.T) {
-	var stack stack = &Node{Chunk.Coordinate{1, 1}, nil}
+	var stack stack = &Node{chunk.Coordinate{1, 1}, nil}
 	for i := 0; i < 5; i++ {
-		stack.addInStack(Chunk.Coordinate{i, i + 1})
+		stack.addInStack(chunk.Coordinate{i, i + 1})
 	}
 	i := 0
 	for i < 10 {
@@ -43,8 +43,8 @@ func TestStack(t *testing.T) {
 }
 func TestAstar(t *testing.T) {
 	World := NewCacheWorldMap()
-	person := Chunk.Coordinate{16, 16}
-	target := Chunk.Coordinate{304, 240}
+	person := chunk.Coordinate{16, 16}
+	target := chunk.Coordinate{304, 240}
 	c := GetChunkID(person.X, person.Y)
 	d := GetCurrentPlayerMap(c)
 	_ = GetPlayerDrawChunkMap(d, &World)

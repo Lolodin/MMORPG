@@ -1,7 +1,7 @@
-package WorldMap
+package wmap
 
 import (
-	"Test/Chunk"
+	"Test/chunk"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"sync"
@@ -17,7 +17,7 @@ type Player struct {
 	speed    int
 	move     bool
 	//	AnimKey string
-	walkPath Chunk.Coordinate
+	walkPath chunk.Coordinate
 }
 type Players struct {
 	P []Player `json:"players"`
@@ -45,7 +45,7 @@ func (p *Player) isMove() bool {
 func (p *Player) SetWalkPath(x, y int, m *WorldMap) {
 
 	if p.X != x && p.Y != y {
-		xy := Chunk.Coordinate{X: x, Y: y}
+		xy := chunk.Coordinate{X: x, Y: y}
 		p.walkPath = xy
 		// Использовать канал для сигнала?
 		if !p.move {
@@ -63,12 +63,12 @@ func (p *Player) SetWalkPath(x, y int, m *WorldMap) {
 }
 
 //Получаем путь куда должен перемещаться персонаж
-func (p *Player) GetWalkPath() Chunk.Coordinate {
+func (p *Player) GetWalkPath() chunk.Coordinate {
 	return p.walkPath
 }
 
-func (p *Player) GetPlayerXY() Chunk.Coordinate {
-	return Chunk.Coordinate{X: p.X, Y: p.Y}
+func (p *Player) GetPlayerXY() chunk.Coordinate {
+	return chunk.Coordinate{X: p.X, Y: p.Y}
 }
 
 func (p *Player) SetPassword(pass string) {
@@ -109,7 +109,7 @@ func (p *Player) walk(m *WorldMap) {
 			"package":  "WorldMap",
 			"func":     "walk",
 			"BusyTile": a,
-			"Person":   Chunk.Coordinate{p.X, p.Y},
+			"Person":   chunk.Coordinate{p.X, p.Y},
 			"target":   p.walkPath,
 		}).Info("Tile Busy")
 		return
@@ -117,8 +117,8 @@ func (p *Player) walk(m *WorldMap) {
 	p.mut.Lock()
 	p.move = true
 	p.mut.Unlock()
-	graph := createGraph(m, Chunk.Coordinate{p.X, p.Y}, p.walkPath)
-	path := Astar(graph, Chunk.Coordinate{p.X, p.Y}, p.walkPath)
+	graph := createGraph(m, chunk.Coordinate{p.X, p.Y}, p.walkPath)
+	path := Astar(graph, chunk.Coordinate{p.X, p.Y}, p.walkPath)
 	var s stack = &Node{}
 	q := createStackpath(path, s, p.walkPath)
 	i := true
@@ -130,7 +130,7 @@ func (p *Player) walk(m *WorldMap) {
 	log.WithFields(log.Fields{
 		"package": "WorldMap",
 		"func":    "walk",
-		"Person":  Chunk.Coordinate{p.X, p.Y},
+		"Person":  chunk.Coordinate{p.X, p.Y},
 		"target":  p.walkPath,
 		"path":    q,
 	}).Info("Walker path")

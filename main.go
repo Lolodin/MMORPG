@@ -2,7 +2,7 @@ package main
 
 import (
 	"Test/GameController"
-	"Test/WorldMap"
+	"Test/wmap"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/websocket"
@@ -24,7 +24,7 @@ func main() {
 		"package": "main",
 		"func":    "main",
 	}).Info("Server start")
-	World := WorldMap.NewCacheWorldMap()
+	World := wmap.NewCacheWorldMap()
 	http.HandleFunc("/init", GameController.InitHandler(&World))
 	http.HandleFunc("/map", GameController.Map_Handler(&World))
 	http.Handle("/player", websocket.Handler(GameController.PlayerHandler(&World)))

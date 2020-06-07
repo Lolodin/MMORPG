@@ -1,4 +1,4 @@
-package Chunk
+package chunk
 
 import (
 	"Test/PerlinNoise"

@@ -1,21 +1,22 @@
-package WorldMap
+package wmap
 
 import (
-	"Test/Chunk"
+	"Test/chunk"
 )
 
-type Graphpath map[Chunk.Coordinate][]Chunk.Coordinate
+type Graphpath map[chunk.Coordinate][]chunk.Coordinate
 
 // сделать возврат ошибки
-func createGraph(worldMap *WorldMap, person Chunk.Coordinate, target Chunk.Coordinate) Graphpath {
-	chunk := GetChunkID(person.X, person.Y)
+func createGraph(worldMap *WorldMap, person chunk.Coordinate, target chunk.Coordinate) Graphpath {
+	Chunk := GetChunkID(person.X, person.Y)
+
 	var stack queue = &Node{}
 	stack.addInQueue(person)
-	thisMap := GetCurrentPlayerMap(chunk)
+	thisMap := GetCurrentPlayerMap(Chunk)
 	m := GetPlayerDrawChunkMap(thisMap, worldMap)
 	find := true
 	graph := Graphpath{}
-	visited := make(map[Chunk.Coordinate]bool)
+	visited := make(map[chunk.Coordinate]bool)
 	for find {
 
 		currentCoord, e := stack.getData()
@@ -34,8 +35,8 @@ func createGraph(worldMap *WorldMap, person Chunk.Coordinate, target Chunk.Coord
 }
 
 // переделать под переход только на свободные тайлы
-func getAllCoordinate(person Chunk.Coordinate, m *personMap, visited map[Chunk.Coordinate]bool) []Chunk.Coordinate {
-	var coord [8]Chunk.Coordinate
+func getAllCoordinate(person chunk.Coordinate, m *personMap, visited map[chunk.Coordinate]bool) []chunk.Coordinate {
+	var coord [8]chunk.Coordinate
 
 	coord[0].X = person.X + 32
 	coord[0].Y = person.Y + 32
@@ -60,7 +61,7 @@ func getAllCoordinate(person Chunk.Coordinate, m *personMap, visited map[Chunk.C
 
 	coord[7].X = person.X
 	coord[7].Y = person.Y + 32
-	var noBysyTile []Chunk.Coordinate
+	var noBysyTile []chunk.Coordinate
 	for _, v := range coord {
 		t, e := m.getTile(v)
 		if e != nil || visited[v] {
@@ -73,11 +74,11 @@ func getAllCoordinate(person Chunk.Coordinate, m *personMap, visited map[Chunk.C
 	return noBysyTile
 }
 
-func (g Graphpath) checkEdge(coord Chunk.Coordinate) bool {
+func (g Graphpath) checkEdge(coord chunk.Coordinate) bool {
 	_, ok := g[coord]
 	return ok
 }
-func (g Graphpath) addEdge(coordParent Chunk.Coordinate, coords []Chunk.Coordinate) {
+func (g Graphpath) addEdge(coordParent chunk.Coordinate, coords []chunk.Coordinate) {
 	for _, v := range coords {
 		if g.checkEdge(v) {
 			continue
@@ -86,7 +87,9 @@ func (g Graphpath) addEdge(coordParent Chunk.Coordinate, coords []Chunk.Coordina
 		}
 	}
 }
-func addCoordToStack(s queue, coords []Chunk.Coordinate, m *personMap, graphpath Graphpath, visited map[Chunk.Coordinate]bool) queue {
+
+// Добавить Координаты в стек
+func addCoordToStack(s queue, coords []chunk.Coordinate, m *personMap, graphpath Graphpath, visited map[chunk.Coordinate]bool) queue {
 	for _, v := range coords {
 		if !graphpath.checkEdge(v) && !visited[v] {
 			visited[v] = true

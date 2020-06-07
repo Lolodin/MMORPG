@@ -1,26 +1,26 @@
-package WorldMap
+package wmap
 
 import (
-	"Test/Chunk"
+	"Test/chunk"
 	"fmt"
 )
 
 type queue interface {
-	addInQueue(coor Chunk.Coordinate)
+	addInQueue(coor chunk.Coordinate)
 	checkChild() bool
-	getData() (Chunk.Coordinate, error)
+	getData() (chunk.Coordinate, error)
 }
 type stack interface {
 	// Добавляем элемент в стек
-	addInStack(coor Chunk.Coordinate)
-	getDataS() (Chunk.Coordinate, error)
+	addInStack(coor chunk.Coordinate)
+	getDataS() (chunk.Coordinate, error)
 }
 type list interface {
 	addNextNode(node *Node)
 }
 
 type Node struct {
-	Data     Chunk.Coordinate
+	Data     chunk.Coordinate
 	NextNode *Node
 }
 
@@ -33,7 +33,7 @@ func (n *Node) addNextNode(n2 Node) {
 }
 
 // Добавляем элемент в очередь
-func (n *Node) addInQueue(coor Chunk.Coordinate) {
+func (n *Node) addInQueue(coor chunk.Coordinate) {
 	n2 := Node{Data: coor}
 	if n.checkChild() {
 		n.NextNode.addInQueue(coor)
@@ -48,7 +48,7 @@ func (n *Node) checkChild() bool {
 }
 
 // Добавляем элемент в стек
-func (n *Node) addInStack(coor Chunk.Coordinate) {
+func (n *Node) addInStack(coor chunk.Coordinate) {
 	n2 := Node{Data: coor}
 	node := *n
 	n2.NextNode = &node
@@ -58,10 +58,10 @@ func (n *Node) addInStack(coor Chunk.Coordinate) {
 }
 
 //Возвращаем элемент очереди
-func (n *Node) getData() (Chunk.Coordinate, error) {
+func (n *Node) getData() (chunk.Coordinate, error) {
 	nextNode := n.NextNode
 	if nextNode == nil {
-		return Chunk.Coordinate{}, fmt.Errorf("queue is empty")
+		return chunk.Coordinate{}, fmt.Errorf("queue is empty")
 	}
 	n.Data = nextNode.Data
 	n.NextNode = nextNode.NextNode
@@ -69,11 +69,11 @@ func (n *Node) getData() (Chunk.Coordinate, error) {
 }
 
 //Возвращаем элемент стека
-func (n *Node) getDataS() (Chunk.Coordinate, error) {
+func (n *Node) getDataS() (chunk.Coordinate, error) {
 	data := n.Data
 	node := n.NextNode
 	if node == nil {
-		return Chunk.Coordinate{}, fmt.Errorf("Stack is empty")
+		return chunk.Coordinate{}, fmt.Errorf("Stack is empty")
 	}
 	n.NextNode = node.NextNode
 	n.Data = node.Data
@@ -87,13 +87,13 @@ func (n *Node) printChild() {
 }
 
 //Функция поиска пути, возвращает Очередь из координат
-func Astar(graphpath Graphpath, person Chunk.Coordinate, target Chunk.Coordinate) Node {
+func Astar(graphpath Graphpath, person chunk.Coordinate, target chunk.Coordinate) Node {
 	var q queue = &Node{}
 	q.addInQueue(person)
-	var coord Chunk.Coordinate
+	var coord chunk.Coordinate
 
-	visited := make(map[Chunk.Coordinate]bool)
-	path := make(map[Chunk.Coordinate]Node)
+	visited := make(map[chunk.Coordinate]bool)
+	path := make(map[chunk.Coordinate]Node)
 	n1 := &Node{}
 	n1.Data = coord
 	path[person] = *n1
@@ -139,7 +139,7 @@ func Astar(graphpath Graphpath, person Chunk.Coordinate, target Chunk.Coordinate
 }
 
 // return nil if stack empty
-func createStackpath(node Node, s stack, p Chunk.Coordinate) stack {
+func createStackpath(node Node, s stack, p chunk.Coordinate) stack {
 	if node.NextNode != nil {
 		fmt.Println(s, "+stack")
 		s.addInStack(node.Data)

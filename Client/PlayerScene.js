@@ -123,11 +123,11 @@ class PlayerScene extends Phaser.Scene {
         }
     }
     drawTileChunk(chunk, chunkID) {
-        // Check Chunk is Load
+        // Check chunk is Load
         if (this.LoadChunks[chunkID] == true) {
             return
         }
-        // add Chunk Group for tiles
+        // add chunk Group for tiles
         // Load chunk true
         this.CurrentMap[chunkID] = this.add.group()
         this.LoadChunks[chunkID] = true

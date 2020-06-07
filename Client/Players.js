@@ -41,7 +41,7 @@ class Players extends Phaser.GameObjects.Sprite {
             } else if(this.activePlayers[players[i].Name] && players[i].Name !=  this.scene.ID.name) {
 
                 let coord =  this.scene.cartesianToIsometric(players[i])
-                this.activePlayers[players[i].Name].setDepth(coord.y)
+                this.activePlayers[players[i].Name].setDepth(coord.y+1)
                 this.activePlayers[players[i].Name].x =coord.x
                 this.activePlayers[players[i].Name].y =coord.y
 

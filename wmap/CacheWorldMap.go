@@ -1,7 +1,7 @@
-package WorldMap
+package wmap
 
 import (
-	"Test/Chunk"
+	"Test/chunk"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"sync"
@@ -9,13 +9,13 @@ import (
 
 type WorldMap struct {
 	sync.Mutex
-	Chunks map[Chunk.Coordinate]Chunk.Chunk
+	Chunks map[chunk.Coordinate]chunk.Chunk
 	Player map[string]*Player
-	Tree   *Chunk.Tree
+	Tree   *chunk.Tree
 }
 
 //Возвращает чанк соответствующий координатам, возвращает ошибку если такого чанка не существует
-func (w *WorldMap) GetChunk(coordinate Chunk.Coordinate) (Chunk.Chunk, error) {
+func (w *WorldMap) GetChunk(coordinate chunk.Coordinate) (chunk.Chunk, error) {
 	c, ok := w.Chunks[coordinate]
 	if ok == true {
 		return c, nil
@@ -26,7 +26,7 @@ func (w *WorldMap) GetChunk(coordinate Chunk.Coordinate) (Chunk.Chunk, error) {
 }
 
 // Добавлявет в мир чанк
-func (w *WorldMap) AddChunk(coordinate Chunk.Coordinate, chunk Chunk.Chunk) {
+func (w *WorldMap) AddChunk(coordinate chunk.Coordinate, chunk chunk.Chunk) {
 
 	isExist := w.isChunkExist(coordinate)
 	if isExist {
@@ -46,7 +46,7 @@ func (w *WorldMap) AddChunk(coordinate Chunk.Coordinate, chunk Chunk.Chunk) {
 }
 
 //Проверяет, существует чанк в мире или нет
-func (w *WorldMap) isChunkExist(coordinate Chunk.Coordinate) bool {
+func (w *WorldMap) isChunkExist(coordinate chunk.Coordinate) bool {
 	_, ok := w.Chunks[coordinate]
 
 	return ok
@@ -54,7 +54,7 @@ func (w *WorldMap) isChunkExist(coordinate Chunk.Coordinate) bool {
 
 func NewCacheWorldMap() WorldMap {
 	world := WorldMap{}
-	world.Chunks = make(map[Chunk.Coordinate]Chunk.Chunk)
+	world.Chunks = make(map[chunk.Coordinate]chunk.Chunk)
 	world.Player = make(map[string]*Player)
 	return world
 }
@@ -108,8 +108,8 @@ func (w *WorldMap) CheckBusyTile(PX, PY int) bool {
 	chunkId := GetChunkID(PX, PY)
 	w.Lock()
 	defer w.Unlock()
-	b := w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Busy
-	c := w.Chunks[chunkId].Map[Chunk.Coordinate{X: PX, Y: PY}].Key
+	b := w.Chunks[chunkId].Map[chunk.Coordinate{X: PX, Y: PY}].Busy
+	c := w.Chunks[chunkId].Map[chunk.Coordinate{X: PX, Y: PY}].Key
 	return b && c == "Water"
 
 }

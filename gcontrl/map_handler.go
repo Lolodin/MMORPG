@@ -1,4 +1,4 @@
-package GameController
+package gcontrl
 
 import (
 	"Test/chunk"

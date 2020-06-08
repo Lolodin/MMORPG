@@ -15,9 +15,6 @@ type stack interface {
 	addInStack(coor chunk.Coordinate)
 	getDataS() (chunk.Coordinate, error)
 }
-type list interface {
-	addNextNode(node *Node)
-}
 
 type Node struct {
 	Data     chunk.Coordinate

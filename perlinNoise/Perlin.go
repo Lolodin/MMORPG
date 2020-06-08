@@ -1,4 +1,4 @@
-package PerlinNoise
+package perlinNoise
 
 import (
 	"math"

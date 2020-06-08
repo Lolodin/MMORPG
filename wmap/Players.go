@@ -142,7 +142,7 @@ func (p *Player) walk(m *WorldMap) {
 			break
 		}
 		fmt.Println(e, "Move")
-		for true {
+		for {
 			time.Sleep(time.Duration(p.speed) * time.Millisecond)
 			fmt.Println("GO,", e)
 			if p.Y > e.Y {

@@ -1,7 +1,7 @@
 package chunk
 
 import (
-	"Test/PerlinNoise"
+	"Test/perlinNoise"
 	log "github.com/sirupsen/logrus"
 	"math/rand"
 	"strconv"
@@ -77,7 +77,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 					tile.X = int(posX)
 					tile.Y = int(posY)
 
-					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
+					perlinValue := perlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 					switch {
 					case perlinValue < -0.01:
 						tile.Key = "Water"
@@ -118,7 +118,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 					tile.X = int(posX)
 					tile.Y = int(posY)
 
-					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
+					perlinValue := perlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 					switch {
 					case perlinValue < -0.012:
 						tile.Key = "Water"
@@ -158,7 +158,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 					tile.X = int(posX)
 					tile.Y = int(posY)
-					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
+					perlinValue := perlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 					switch {
 					case perlinValue < -0.012:
 						tile.Key = "Water"
@@ -196,7 +196,7 @@ func NewChunk(idChunk Coordinate) Chunk {
 
 					tile.X = int(posX)
 					tile.Y = int(posY)
-					perlinValue := PerlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
+					perlinValue := perlinNoise.Noise(posX/PERLIN_SEED, posY/PERLIN_SEED)
 
 					switch {
 					case perlinValue < -0.012:

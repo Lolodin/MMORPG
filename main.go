@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Test/GameController"
+	"Test/gcontrl"
 	"Test/wmap"
 
 	log "github.com/sirupsen/logrus"
@@ -25,9 +25,9 @@ func main() {
 		"func":    "main",
 	}).Info("Server start")
 	World := wmap.NewCacheWorldMap()
-	http.HandleFunc("/init", GameController.InitHandler(&World))
-	http.HandleFunc("/map", GameController.Map_Handler(&World))
-	http.Handle("/player", websocket.Handler(GameController.PlayerHandler(&World)))
+	http.HandleFunc("/init", gcontrl.InitHandler(&World))
+	http.HandleFunc("/map", gcontrl.Map_Handler(&World))
+	http.Handle("/player", websocket.Handler(gcontrl.PlayerHandler(&World)))
 	http.HandleFunc("/", indexHandler)
 
 	//static

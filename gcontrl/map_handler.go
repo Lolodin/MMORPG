@@ -20,6 +20,12 @@ type pingPlayer struct {
 	Name string `json:"name"`
 	chunk.Coordinate
 }
+func (p pingPlayer) GetCoordinate() chunk.Coordinate {
+	return chunk.Coordinate{X:p.X, Y:p.Y}
+}
+func (p pingPlayer) GetID() string {
+	return p.Name
+}
 
 func Map_Handler(W *wmap.WorldMap) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +78,7 @@ func PlayerHandler(W *wmap.WorldMap) func(ws *websocket.Conn) {
 			"func":    "PlayerHandler",
 			"player":  player,
 		}).Info("Connect player")
-		var target chunk.Coordinate
+
 		for {
 			err := websocket.JSON.Receive(ws, &player)
 			if err != nil {
@@ -83,36 +89,8 @@ func PlayerHandler(W *wmap.WorldMap) func(ws *websocket.Conn) {
 				}).Error("Connect cancel")
 				return
 			}
-			rwalkpath := chunk.Coordinate{player.X, player.Y}
-			if target == rwalkpath {
-				log.WithFields(log.Fields{
-					"Player": player,
-					"path":   rwalkpath,
-				}).Info("skip set walk")
-				pls := W.GetPlayers()
-				websocket.JSON.Send(ws, pls)
-				continue
-			}
-			walkpath := W.Player[player.Name].GetPlayerXY()
 
-			target = rwalkpath
-			if walkpath == rwalkpath {
-				log.WithFields(log.Fields{
-					"Player": player,
-					"path":   rwalkpath,
-				}).Info("skip set walk")
-				pls := W.GetPlayers()
-				websocket.JSON.Send(ws, pls)
-				continue
-			}
-
-			log.WithFields(log.Fields{
-				"Player":         W.Player[player.Name],
-				"PlayerResponse": player,
-				"walkpath":       walkpath,
-				"path":           rwalkpath,
-			}).Info("start walk")
-			W.Player[player.Name].SetWalkPath(player.X, player.Y, W)
+			W.UpdatePlayer(player)
 			pls := W.GetPlayers()
 			websocket.JSON.Send(ws, pls)
 			log.WithFields(log.Fields{

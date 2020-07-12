@@ -18,35 +18,30 @@ class Players extends Phaser.GameObjects.Sprite {
     DrawPlayer(players) {
         for (let i = 0; i<players.length; i++) {
             if (players[i].Name ==  this.scene.ID.Name) {
-                let coord =  this.scene.cartesianToIsometric(players[i])
-                this.scene.ID.x = coord.x
-                this.scene.ID.y = coord.y
+                this.scene.ID.x = players[i].x
+                this.scene.ID.y = players[i].y
             }
             if (!this.activePlayers[players[i].Name] && players[i].Name !=  this.scene.ID.name) {
 
 
-                let coord =  this.scene.cartesianToIsometric(players[i])
-                this.activePlayers[players[i].Name] =  this.scene.add.container(coord.x,coord.y)
-                let player =   this.scene.add.sprite(0,-32, "Player")
-                player.play("PlayerTurn")
-                let Text =  this.scene.add.text(-players[i].Name.length*5,-78,players[i].Name, {fontFamily: 'Arial'})
 
-
-
-
-
-
+                this.activePlayers[players[i].Name] =  this.scene.add.container(players[i].x,players[i].y)
+                let player =   this.scene.add.image(0,0, "Player")
+                let Text =  this.scene.add.text(-players[i].Name.length*5,-32,players[i].Name, {fontFamily: 'Arial'})
                 this.activePlayers[players[i].Name].add(player)
                 this.activePlayers[players[i].Name].add(Text)
-            } else if(this.activePlayers[players[i].Name] && players[i].Name !=  this.scene.ID.name) {
+            }
+            else if (this.activePlayers[players[i].Name] && players[i].Name !=  this.scene.ID.name) {
 
-                let coord =  this.scene.cartesianToIsometric(players[i])
-                this.activePlayers[players[i].Name].setDepth(coord.y+1)
-                this.activePlayers[players[i].Name].x =coord.x
-                this.activePlayers[players[i].Name].y =coord.y
+
+                this.activePlayers[players[i].Name].setDepth(players[i].y)
+                this.activePlayers[players[i].Name].x =players[i].x
+                this.activePlayers[players[i].Name].y =players[i].y
 
             }
+
         }
+
     }
 
 

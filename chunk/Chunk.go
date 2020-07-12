@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-const CHUNKIDSIZE = 32
-const TILE_SIZE = 32
-const CHUNK_SIZE = 32 * 32
+const CHUNKIDSIZE = 16
+const TILE_SIZE = 16
+const CHUNK_SIZE = 16 * 16
 const PERLIN_SEED float32 = 2300
 
 // Чанк который хранит тайтлы и другие игровые объекты

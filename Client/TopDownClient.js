@@ -1,19 +1,19 @@
+import {Identification} from "./Identification.js";
+import {Players} from "./Players.js";
 
-    export {TopDownClient}
+export {TopDownClient}
 
 class TopDownClient extends Phaser.Scene{
     constructor() {
         super({key: "SceneMain"})
-        this.GetServerMap()
-        this.CurrentChunk = [1,1]//Начальный чанк
-        this.coordinate = this.getCurrentMap(this.CurrentChunk) // Массив Координат чанков на текущей карте
-        this.tileSize = 16 // Размер тайтла
-        this.chunkSize = 16 * this.tileSize // Размер чанка
-        this.LoadChunks = [] // Загруженные чанки
-        this.CurrentMap = [] // Текущая отрисованная карта
-        this.activePlayers = [] //Активные игроки на карте
-        this.Player = {} // Аватар игрока для обработки сервером
-        this.map = 0//карта для отрисовки
+        this.ID = {} // Аватар игрока для взаимодействия с сервером
+        this.CurrentMap = [] // Текущая отрисованная карта, которая добавлена в группу
+        this.LoadChunks = []// загруженные чанки
+        this.LoadChunksTree = [] // Деревья
+        this.coordinate = 0
+        this.CurrentChunk =0
+        this.chunkSize =  16 *  16
+       // Путь куда должен двигаться персонаж
 
 }
 
@@ -23,16 +23,20 @@ class TopDownClient extends Phaser.Scene{
             frameHeight: 16,
             frameWidth: 16,
         });
-        this.load.image('Mount', 'Client/Content/sprSand.png');
+        this.load.image('Sand', 'Client/Content/sprSand.png');
         this.load.image('Ground', 'Client/Content/sprGrass.png');
         this.load.image('Player', 'Client/Content/Player.png');
         this.load.image('Oak', 'Client/Content/Oak.png');
         this.load.image('Spruce', 'Client/Content/Spruce.png');
-        this.Identification() // Идентификация игрока
-            //Соединение с вебсокетом
-        this.websocket = new WebSocket("ws://localhost:8080/player")
-        this.websocket.onopen = function (e) {
 
+        //Идентификация
+        let ident = new Identification(this)
+        ident.inServer()
+
+        //Открываем соединение
+        this.websocket = new WebSocket("ws://localhost:8080/player")
+        this.websocket.onopen = (e) => {
+            console.log("OPEN", e)
         }
 
 
@@ -45,13 +49,19 @@ class TopDownClient extends Phaser.Scene{
             frameRate: 7,
             repeat: -1
         });
+        this.Players = new Players(this)
+        this.GetServerMap(this.ID.x,this.ID.x)
 
-       this.P = this.add.image(8,8, "Player")
-        this.Player.x = 8
-        this.Player.y = 8
-       this.P.setDepth(2)
-       this.cameras.main.startFollow(this.P, true)
-        this.GetServerMap(this.P.x, this.P.y)
+        this.CurrentChunk =  this.getChunkID(this.ID.x,this.ID.y)
+        this.cameras.main.startFollow(this.ID, true)
+        this.coordinate = this.getCurrentMap(this.CurrentChunk)
+        this.websocket.onmessage = (e)=> {
+            //  console.log("on message")
+            let players = e.data
+            players = JSON.parse(players)
+            //  console.log(players)
+            this.Players.DrawPlayer(players.players)
+        }
 
         /*
         Рисуем игроков на игровой карте
@@ -60,48 +70,50 @@ class TopDownClient extends Phaser.Scene{
             let players = e.data
             players = JSON.parse(players)
             console.log(players)
-            this.DrawPlayers(players)
+            this.Players.DrawPlayer(players.players)
         }
         console.log(this.CurrentMap)
 
     }
     update(time, delta) {
-// Блок управления
-let cursors = this.input.keyboard.createCursorKeys();
-if (cursors.left.isDown) {
-    this.Player.x-=1
-}
-if (cursors.right.isDown) {
-    this.Player.x+=1
+        let cursors = this.input.keyboard.createCursorKeys();
+        if (cursors.left.isDown) {
+            this.ID.x-=1
+        }
+        if (cursors.right.isDown) {
+            this.ID.x+=1
         }
         if (cursors.up.isDown) {
-            this.Player.y-=1
+            this.ID.y-=1
         }
         if (cursors.down.isDown) {
-            this.Player.y+=1
+            this.ID.y+=1
         }
 
 
-      let  nowChunk = this.getChunkID(this.P.x, this.P.y)
+        if (this.websocket.readyState === 1) {
+            let playerData = {name: this.ID.Name,  x: this.ID.x, y: this.ID.y}
+            this.websocket.send(JSON.stringify(playerData))
+        }
+
+
+
+// Блок управления
+        //вынести в глобал
+
+
+
+        let  nowChunk = this.getChunkID(this.ID.x, this.ID.y)
         if (nowChunk[0]!= this.CurrentChunk[0] || nowChunk[1]!=this.CurrentChunk[1]) {
             let newCoordinate = this.getCurrentMap(nowChunk)
-            this.CurrentChunk = this.getChunkID(this.P.x, this.P.y)
+            this.CurrentChunk =  nowChunk
             this.clearMap(newCoordinate)
-            this.GetServerMap(this.P.x,this.P.y)
             this.coordinate = newCoordinate
+            this.GetServerMap(this.ID.x, this.ID.y)
         }
-        //Посылаем данные о местоположении игрока на сервер
-let playerData = {Name: this.Player.name, X: this.Player.x, Y: this.Player.y}
-        JSON.stringify(playerData)
-        this.websocket.send(JSON.stringify(playerData))
+
     }
 
-    // Функции для взаимодействия с сервером
-    //Идентификация
-    Identification() {
-        let pro = prompt("введите имя", "anon")
-        this.Player.name = pro
-    }
     // Получаем Игровую карту
     async GetServerMap(X, Y) {
         let Data = {x:X,y:Y, playerID:2}
@@ -110,13 +122,76 @@ let playerData = {Name: this.Player.name, X: this.Player.x, Y: this.Player.y}
             body: JSON.stringify(Data)
 
         } )
-        request = request.json()
-        request.then((data)=>
-        {
-            this.map =  data.CurrentMap
-            this.DrawMap(this.map)
-        })
+        request = await request.json() // request.CurrentMap[9].Map
+        /*
+        request = [9]Map, Map = Map["8,8"]{ Grass, X = 8, Y= 8}
+         */
+        this.drawMapController(request)
 
+    }
+    drawMapController(requstMapServer) {
+        //  requstMapServer.CurrentMap.forEach((chunk =>this.drawTileChunk(chunk.Map, chunk.ChunkID) ))
+        for (let i = 0; i<9;i++) {
+            this.drawTileChunk(requstMapServer.CurrentMap[i].Map,  requstMapServer.CurrentMap[i].ChunkID)
+            this.drawTree(requstMapServer.CurrentMap[i].Tree, requstMapServer.CurrentMap[i].ChunkID )
+        }
+    }
+    drawTileChunk(chunk, chunkID) {
+        // Check chunk is Load
+        if (this.LoadChunks[chunkID] == true) {
+            return
+        }
+        // add chunk Group for tiles
+        // Load chunk true
+        this.CurrentMap[chunkID] = this.add.group()
+        this.LoadChunks[chunkID] = true
+        for (let coordTile in chunk) {
+            let tile
+
+            if(chunk[coordTile].key == "Water") {
+                tile = this.add.sprite(chunk[coordTile].x, chunk[coordTile].y, chunk[coordTile].key).play('water', true);
+
+
+
+            } else {
+                tile = this.add.image(chunk[coordTile].x, chunk[coordTile].y,chunk[coordTile].key )
+            }
+            tile.setDepth(1)
+            tile.setInteractive()
+            tile.on('clicked', (tile)=>{
+                tile.alpha = 0.5
+                setTimeout(()=>tile.alpha =1, 1000)
+
+                this.targetPath[0] = tile.x
+                this.targetPath[1] = tile.y
+                //console.log(this.targetPath)
+            }, this)
+            // tile.active = false
+
+// add tile in ChunkGroup
+            this.CurrentMap[chunkID].add(tile)
+
+        }
+    }
+    drawTree(chunk, chunkID) {
+        if (this.LoadChunksTree[chunkID] == true) {
+            return
+        }
+        this.LoadChunksTree[chunkID] = true
+        for (let coordTile in chunk) {
+            let tree
+
+            tree = this.add.image(chunk[coordTile].x, chunk[coordTile].y,chunk[coordTile].tree)
+            tree.setDepth(chunk[coordTile].y+12)
+            tree.setRotation(chunk[coordTile].age/5)
+
+            //console.log(coordTile, coordinate, "coordTREEE")
+
+            this.CurrentMap[chunkID].add(tree)
+        }
+
+
+// add tile in ChunkGroup
 
 
     }
@@ -125,71 +200,27 @@ let playerData = {Name: this.Player.name, X: this.Player.x, Y: this.Player.y}
 Функции для рединга игры
  */
 // Функция отрисовки карты
-    DrawMap(map) {
 
-        map.forEach(m =>this.DrawChunc(m)
-        )
-    }
     //Отрисовка чанка и игровых объектов на нем
-    DrawChunc(chunck) {
-
-        if (this.LoadChunks[chunck.ChunkID] == true) {
-            return
-        }
-        this.CurrentMap[chunck.ChunkID] = this.add.group()
-        this.LoadChunks[chunck.ChunkID] = true
-
-        for (let item in chunck.Map) {
-            {
-                let tile
-                let coordinate = this.cartesianToIsometric(chunck.Map[item].X, chunck.Map[item].Y)
-                if (chunck.Map[item].key == "Water") {
-                    tile = this.add.sprite(coordinate.x, coordinate.y, "Water")
-                    tile.play("water")
-                } else{
-                    tile = this.add.image(coordinate.x, coordinate.y, chunck.Map[item].key)
-                }
 
 
-                this.CurrentMap[chunck.ChunkID].add(tile)
-            }
-
-        }
-        for (let item in chunck.Tree) {
-
-
-                 let tileTree
-            let coordinate = this.cartesianToIsometric(chunck.Tree[item].X, chunck.Tree[item].Y)
-                 tileTree = this.add.image(coordinate.x, coordinate.y, chunck.Tree[item].tree)
-            tileTree.setDepth(2)
-                 this.CurrentMap[chunck.ChunkID].add(tileTree)
-
-
-        }
-    }
-    cartesianToIsometric(cartPt){
-        let tempPt=new Phaser.Geom.Point(cartPt.X-cartPt.Y,(cartPt.X+cartPt.Y)/2 );
-        return (tempPt);
-    }
     //Очистка карты
     clearMap(newCoordinate) {
         for (let i = 0; i<this.coordinate.length;i++) {
             let chunkIsNotExist = true
             newCoordinate.forEach((v) => {
-
                 if (this.coordinate[i][0]==v[0] && this.coordinate[i][1]==v[1]) {
-
                     chunkIsNotExist = false
                 }
             })
 
-
             if (chunkIsNotExist) {
                 let c = this.coordinate[i][0]+","+this.coordinate[i][1]
-                this.LoadChunks[c] = false
-
+                delete this.LoadChunks[c]
+                delete this.LoadChunksTree[c]
                 try {
                     this.CurrentMap[c].clear(true, true)
+                    delete this.CurrentMap[c];
                 }catch (e) {
 
                 }
@@ -198,32 +229,7 @@ let playerData = {Name: this.Player.name, X: this.Player.x, Y: this.Player.y}
         }
     }
     //Отрисовка игроков
-    DrawPlayers(players) {
 
-        for (let i = 0; i<players.players.length; i++) {
-            if (players.players[i].Name == this.Player.name) {
-                this.P.x = players.players[i].X
-                this.P.y = players.players[i].Y
-            }
-
-            if (!this.activePlayers[players.players[i].Name] && players.players[i].Name != this.Player.name) {
-                this.activePlayers[players.players[i].Name] = this.add.container(players.players[i].X,players.players[i].Y)
-                let player =  this.add.image(0,0, "Player")
-                let Text = this.add.text(-players.players[i].Name.length*5,-23,players.players[i].Name)
-                this.activePlayers[players.players[i].Name].setDepth(2)
-                this.activePlayers[players.players[i].Name].add(player)
-                this.activePlayers[players.players[i].Name].add(Text)
-            } else if(this.activePlayers[players.players[i].Name] && players.players[i].Name != this.Player.name) {
-
-
-                this.activePlayers[players.players[i].Name].x =players.players[i].X
-                this.activePlayers[players.players[i].Name].y =players.players[i].Y
-            }}
-
-
-
-
-    }
 
     //Вспомогательные функции для работы с картой и координатами
     getChunkID(x, y) {

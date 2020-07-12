@@ -20,7 +20,6 @@ class Identification {
         if (res.error == "null") {
             this.Scene.ID.x = res.x
             this.Scene.ID.y = res.y
-            this.Scene.targetPath = [ res.x, res.y]
         } else {
             alert("Error server")
         }

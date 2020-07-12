@@ -7,6 +7,11 @@ import (
 	"sync"
 )
 
+type receiveDataPlayer interface {
+	GetCoordinate() chunk.Coordinate
+	GetID() string
+}
+
 type WorldMap struct {
 	sync.Mutex
 	Chunks map[chunk.Coordinate]chunk.Chunk
@@ -74,16 +79,15 @@ func (w *WorldMap) AddPlayer(player *Player) {
 }
 
 // Обновляем данные персонажа в мире
-func (w *WorldMap) UpdatePlayer(player Player) {
+func (w *WorldMap) UpdatePlayer(p receiveDataPlayer) {
+	c:= p.GetCoordinate()
 	w.Lock()
-	p, ok := w.Player[player.Name]
+	_, ok := w.Player[p.GetID()]
 	w.Unlock()
 	if ok {
-
-		p.X = player.X
-		p.Y = player.Y
 		w.Lock()
-		w.Player[player.Name] = p
+		w.Player[p.GetID()].X = c.X
+		w.Player[p.GetID()].Y = c.Y
 		w.Unlock()
 
 	} else {

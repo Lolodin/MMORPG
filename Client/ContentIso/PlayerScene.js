@@ -1,5 +1,5 @@
 export {PlayerScene}
-import {Identification} from "./Identification.js";
+import {Identification} from "../Identification.js";
 import {Players} from "./Players.js";
 
 
@@ -91,8 +91,7 @@ class PlayerScene extends Phaser.Scene {
             this.CurrentChunk =  nowChunk
             this.clearMap(newCoordinate)
             this.coordinate = newCoordinate
-            let cartesianCoord = this.isometricTocartesian({x:this.ID.x, y: this.ID.y})
-            this.GetServerMap(cartesianCoord.x, cartesianCoord.y)
+            this.GetServerMap(this.ID.x, this.ID.y)
         }
 
 

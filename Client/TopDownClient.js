@@ -1,5 +1,6 @@
 import {Identification} from "./Identification.js";
 import {Players} from "./Players.js";
+import {GameMap} from "./Map.js";
 
 export {TopDownClient}
 
@@ -10,8 +11,9 @@ class TopDownClient extends Phaser.Scene{
         this.CurrentMap = [] // Текущая отрисованная карта, которая добавлена в группу
         this.LoadChunks = []// загруженные чанки
         this.LoadChunksTree = [] // Деревья
-        this.coordinate = 0
+        this.coordinate = []
         this.CurrentChunk =0
+        this.tileSize = 16
         this.chunkSize =  16 *  16
        // Путь куда должен двигаться персонаж
 
@@ -50,6 +52,7 @@ class TopDownClient extends Phaser.Scene{
             repeat: -1
         });
         this.Players = new Players(this)
+        this.Map = new GameMap(this)
         this.GetServerMap(this.ID.x,this.ID.x)
 
         this.CurrentChunk =  this.getChunkID(this.ID.x,this.ID.y)
@@ -62,7 +65,6 @@ class TopDownClient extends Phaser.Scene{
             //  console.log(players)
             this.Players.DrawPlayer(players.players)
         }
-
         /*
         Рисуем игроков на игровой карте
          */
@@ -98,22 +100,16 @@ class TopDownClient extends Phaser.Scene{
 
 
 
-// Блок управления
-        //вынести в глобал
-
-
-
         let  nowChunk = this.getChunkID(this.ID.x, this.ID.y)
         if (nowChunk[0]!= this.CurrentChunk[0] || nowChunk[1]!=this.CurrentChunk[1]) {
             let newCoordinate = this.getCurrentMap(nowChunk)
             this.CurrentChunk =  nowChunk
-            this.clearMap(newCoordinate)
+            this.Map.clearMap(newCoordinate)
             this.coordinate = newCoordinate
             this.GetServerMap(this.ID.x, this.ID.y)
         }
 
     }
-
     // Получаем Игровую карту
     async GetServerMap(X, Y) {
         let Data = {x:X,y:Y, playerID:2}
@@ -126,112 +122,9 @@ class TopDownClient extends Phaser.Scene{
         /*
         request = [9]Map, Map = Map["8,8"]{ Grass, X = 8, Y= 8}
          */
-        this.drawMapController(request)
+        this.Map.drawMapController(request)
 
     }
-    drawMapController(requstMapServer) {
-        //  requstMapServer.CurrentMap.forEach((chunk =>this.drawTileChunk(chunk.Map, chunk.ChunkID) ))
-        for (let i = 0; i<9;i++) {
-            this.drawTileChunk(requstMapServer.CurrentMap[i].Map,  requstMapServer.CurrentMap[i].ChunkID)
-            this.drawTree(requstMapServer.CurrentMap[i].Tree, requstMapServer.CurrentMap[i].ChunkID )
-        }
-    }
-    drawTileChunk(chunk, chunkID) {
-        // Check chunk is Load
-        if (this.LoadChunks[chunkID] == true) {
-            return
-        }
-        // add chunk Group for tiles
-        // Load chunk true
-        this.CurrentMap[chunkID] = this.add.group()
-        this.LoadChunks[chunkID] = true
-        for (let coordTile in chunk) {
-            let tile
-
-            if(chunk[coordTile].key == "Water") {
-                tile = this.add.sprite(chunk[coordTile].x, chunk[coordTile].y, chunk[coordTile].key).play('water', true);
-
-
-
-            } else {
-                tile = this.add.image(chunk[coordTile].x, chunk[coordTile].y,chunk[coordTile].key )
-            }
-            tile.setDepth(1)
-            tile.setInteractive()
-            tile.on('clicked', (tile)=>{
-                tile.alpha = 0.5
-                setTimeout(()=>tile.alpha =1, 1000)
-
-                this.targetPath[0] = tile.x
-                this.targetPath[1] = tile.y
-                //console.log(this.targetPath)
-            }, this)
-            // tile.active = false
-
-// add tile in ChunkGroup
-            this.CurrentMap[chunkID].add(tile)
-
-        }
-    }
-    drawTree(chunk, chunkID) {
-        if (this.LoadChunksTree[chunkID] == true) {
-            return
-        }
-        this.LoadChunksTree[chunkID] = true
-        for (let coordTile in chunk) {
-            let tree
-
-            tree = this.add.image(chunk[coordTile].x, chunk[coordTile].y,chunk[coordTile].tree)
-            tree.setDepth(chunk[coordTile].y+12)
-            tree.setRotation(chunk[coordTile].age/5)
-
-            //console.log(coordTile, coordinate, "coordTREEE")
-
-            this.CurrentMap[chunkID].add(tree)
-        }
-
-
-// add tile in ChunkGroup
-
-
-    }
-
-/*
-Функции для рединга игры
- */
-// Функция отрисовки карты
-
-    //Отрисовка чанка и игровых объектов на нем
-
-
-    //Очистка карты
-    clearMap(newCoordinate) {
-        for (let i = 0; i<this.coordinate.length;i++) {
-            let chunkIsNotExist = true
-            newCoordinate.forEach((v) => {
-                if (this.coordinate[i][0]==v[0] && this.coordinate[i][1]==v[1]) {
-                    chunkIsNotExist = false
-                }
-            })
-
-            if (chunkIsNotExist) {
-                let c = this.coordinate[i][0]+","+this.coordinate[i][1]
-                delete this.LoadChunks[c]
-                delete this.LoadChunksTree[c]
-                try {
-                    this.CurrentMap[c].clear(true, true)
-                    delete this.CurrentMap[c];
-                }catch (e) {
-
-                }
-            }
-
-        }
-    }
-    //Отрисовка игроков
-
-
-    //Вспомогательные функции для работы с картой и координатами
     getChunkID(x, y) {
         let tileX = Math.fround(x/this.tileSize);
         let tileY = Math.fround(y/this.tileSize);
@@ -266,7 +159,7 @@ class TopDownClient extends Phaser.Scene{
     //Возвращает карту чанка
     getCurrentMap(currentChunk) {
         let map = [];
-        let coordinateX = currentChunk[0]*this.chunkSize;
+        let coordinateX = currentChunk[0]* this.chunkSize;
         let coordinateY = currentChunk[1]*this.chunkSize;
 
 

@@ -5,12 +5,9 @@ import {GameMenu} from "./GameMenu.js";
 
 let config = {
     /*eslint no-undef:0*/
-    scale: {
-        // mode: Phaser.Scale.ENVELOP,
-        // autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: 800   ,
-        height: 600
-    },
+
+    width: 1200,
+    height: 756,
     dom: {
         createContainer: true
     },

@@ -1,4 +1,4 @@
-# MMORPG
+# Проект переехал в приватный репозиторий 
 <img src="https://2ch.hk/gd/src/634039/15814183358363.png" />
 <img src="https://habrastorage.org/webt/qe/tt/ll/qettllbkbgqjvfn_o_x4oaosjzw.gif" />
 Проект задуман как многопользовательская игра с бесконечно генерируемым миром и изометрической графикой.

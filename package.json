@@ -4,7 +4,7 @@
   "description": "lib for client",
   "main": "index.html",
   "dependencies": {
-    "phaser": "^3.21.0"
+    "phaser": "^3.55.2"
   },
   "devDependencies": {},
   "scripts": {
